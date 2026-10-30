@@ -1,34 +1,24 @@
-**Busy Order**
+# Busy Order website
 
-[![Website](https://img.shields.io/badge/Website-BusyOrder-blue)](https://busyorder.co.in)
+Static website plus one serverless function, hosted on Vercel. No login, no Firebase.
 
-Busy Order is a platform that offers college student projects, custom designs, web development, and mobile app development services. 
-The website is built using modern web technologies and hosted on Vercel.
+## Pages
+- `index.html` is the homepage (services, designs, work, FAQ, quote form).
+- `custom.html` lists all 16 designs; each has its own order page (`logo.html`, `poster.html`, ...).
+- `website.html`, `mobile.html`, `UI Design.html` are the bigger paid order pages.
+- `projectdetails.html` lists college project documents.
+- `portfolio.html` is the full portfolio. Legal pages: `privacy.html`, `refund.html`, `termcondition.html`.
 
-🔥 Features
-- College project solutions
-- Custom design services
-- Web development services
-- Mobile app development
+## Where to edit
+- WhatsApp number: search for `918610597402` (index.html, js/home.js, js/order.js text, and the generated pages).
+- Prices on order pages: the `data-amount` attribute is in paise (₹500 = 50000).
+- Colours and fonts: `css/base.css` (variables at the top).
 
-🛠 Tech Stack
-- **Frontend:** HTML, CSS, JavaScript
-- **Backend:** Firebase Realtime Database, Node.js
-- **Hosting:** Vercel
-- **Domain:** GoDaddy
-- **Version Control:** GitHub
+## Deploy
+1. Push to GitHub; Vercel deploys automatically.
+2. In Vercel > Project > Settings > Environment Variables add `GMAIL_USER` and `GMAIL_PASS` (a Gmail App Password).
+3. Never commit `.env`. It is listed in `.gitignore`.
 
-
-📌 Usage
-Visit [Busy Order](https://busyorder.co.in) to explore the services.
-
-📞 Contact
-For inquiries, reach out via:
-- Website: [Busy Order](https://busyorder.co.in)
-- Email: [onlyrithi@gmail.com]
-
-📜 License
-This project is licensed under the Busy Order License.
-
-
-![alt image](https://github.com/krihiga/BusyOrder/blob/90b65e800a7f31cd29aeb58d377b7ad9f96ec367/img/busy%20order%20git%20readme.png)
+## Lead tracking
+Add Google Analytics 4 or Google Tag Manager to `index.html`. Buttons already send events
+(`generate_lead`, `hero_whatsapp`, `form_submit` and more) once `gtag` or `dataLayer` exists.

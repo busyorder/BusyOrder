@@ -1,3 +1,7 @@
 User-agent: *
-Disallow: /private-directory/
 Allow: /
+Disallow: /api/
+Disallow: /project/
+Disallow: /placedesignsuccess.html
+
+Sitemap: https://www.busyorder.co.in/sitemap.xml

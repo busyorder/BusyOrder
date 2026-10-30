@@ -1,0 +1,2585 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Future_Me — AI Resume Studio</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;500;600;700;800&family=DM+Sans:wght@300;400;500;600&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mammoth/1.8.0/mammoth.browser.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg:#08080A;
+  --bg1:#111115;
+  --bg2:#17171C;
+  --bg3:#1E1E25;
+  --accent:#C3FF00;
+  --accent-glow:rgba(195,255,0,0.14);
+  --accent-dim:rgba(195,255,0,0.07);
+  --text:#EEEEF0;
+  --text2:#8A8A96;
+  --text3:#484855;
+  --border:rgba(255,255,255,0.06);
+  --border2:rgba(255,255,255,0.1);
+  --success:rgba(52,211,153,1);
+  --warn:#FBBF24;
+  --danger:#FB7185;
+  --r:10px;--rl:16px;
+}
+html{scroll-behavior:smooth}
+body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;overflow-x:hidden}
+
+/* ─── NAV ─── */
+nav{
+  position:fixed;top:0;left:0;right:0;z-index:100;
+  display:flex;align-items:center;justify-content:space-between;
+  padding:0 2rem;height:58px;
+  background:rgba(8,8,10,0.88);backdrop-filter:blur(14px);
+  border-bottom:1px solid var(--border);
+}
+.logo{
+  font-family:'Syne',sans-serif;font-size:1.05rem;font-weight:800;
+  letter-spacing:-0.02em;cursor:pointer;display:flex;align-items:center;gap:2px;
+}
+.logo span{color:var(--accent)}
+.nav-links{display:flex;align-items:center;gap:4px}
+.nav-btn{
+  padding:5px 14px;border-radius:6px;font-size:0.83rem;font-weight:500;
+  color:var(--text2);cursor:pointer;transition:all 0.15s;
+  border:1px solid transparent;background:none;font-family:'DM Sans',sans-serif;
+}
+.nav-btn:hover{color:var(--text);background:var(--bg2)}
+.nav-btn.active{color:var(--accent);background:var(--accent-dim);border-color:rgba(195,255,0,0.18)}
+
+/* ─── VIEWS ─── */
+.view{display:none;padding-top:58px}
+.view.active{display:block}
+
+/* ─── HOME ─── */
+.hero{
+  min-height:calc(100vh - 58px);display:flex;flex-direction:column;
+  align-items:center;justify-content:center;padding:4rem 2rem 5rem;
+  text-align:center;position:relative;overflow:hidden;
+}
+.hero::before{
+  content:'';position:absolute;top:-10%;left:50%;transform:translateX(-50%);
+  width:700px;height:700px;
+  background:radial-gradient(circle,rgba(195,255,0,0.06) 0%,transparent 65%);
+  pointer-events:none;
+}
+.hero-eyebrow{
+  display:inline-flex;align-items:center;gap:7px;
+  padding:5px 14px;border:1px solid rgba(195,255,0,0.25);border-radius:100px;
+  font-size:0.7rem;font-weight:600;color:var(--accent);letter-spacing:0.09em;
+  text-transform:uppercase;margin-bottom:2.25rem;background:var(--accent-dim);
+}
+.eyebrow-dot{width:6px;height:6px;border-radius:50%;background:var(--accent);animation:blink 2s ease infinite}
+@keyframes blink{0%,100%{opacity:1}50%{opacity:0.3}}
+.hero-title{
+  font-family:'Syne',sans-serif;
+  font-size:clamp(2.8rem,8vw,6rem);font-weight:800;
+  line-height:0.95;letter-spacing:-0.035em;
+  max-width:820px;margin-bottom:1.75rem;
+}
+.hero-title em{font-style:normal;color:var(--accent)}
+.hero-sub{
+  font-size:1.05rem;color:var(--text2);max-width:440px;
+  line-height:1.7;margin-bottom:4rem;font-weight:300;
+}
+.feat-grid{display:grid;grid-template-columns:1fr 1fr;gap:1.25rem;max-width:780px;width:100%}
+.feat-card{
+  background:var(--bg1);border:1px solid var(--border);border-radius:var(--rl);
+  padding:2rem 2rem 1.75rem;text-align:left;cursor:pointer;transition:all 0.22s;
+  position:relative;overflow:hidden;
+}
+.feat-card::after{
+  content:'';position:absolute;inset:0;
+  background:radial-gradient(ellipse at 20% 20%,var(--accent-dim),transparent 55%);
+  opacity:0;transition:opacity 0.3s;
+}
+.feat-card:hover{border-color:rgba(195,255,0,0.22);transform:translateY(-3px)}
+.feat-card:hover::after{opacity:1}
+.feat-badge{
+  display:inline-flex;padding:3px 9px;
+  background:var(--accent-dim);border:1px solid rgba(195,255,0,0.18);
+  border-radius:4px;font-size:0.62rem;font-weight:700;color:var(--accent);
+  letter-spacing:0.07em;text-transform:uppercase;margin-bottom:1.1rem;
+}
+.feat-icon{
+  width:46px;height:46px;border-radius:11px;background:var(--bg3);
+  border:1px solid var(--border2);display:flex;align-items:center;justify-content:center;
+  margin-bottom:1.25rem;font-size:1.3rem;
+}
+.feat-card-title{
+  font-family:'Syne',sans-serif;font-size:1.2rem;font-weight:700;
+  margin-bottom:0.5rem;letter-spacing:-0.01em;
+}
+.feat-card-desc{font-size:0.855rem;color:var(--text2);line-height:1.65;margin-bottom:1.5rem}
+.feat-cta{display:flex;align-items:center;gap:7px;font-size:0.8rem;font-weight:600;color:var(--accent)}
+.feat-cta svg{transition:transform 0.2s}
+.feat-card:hover .feat-cta svg{transform:translateX(4px)}
+
+/* ─── SECTION HEAD ─── */
+.sec-head{padding:2.5rem 0 2rem;text-align:center}
+.sec-title{font-family:'Syne',sans-serif;font-size:1.9rem;font-weight:800;letter-spacing:-0.025em;margin-bottom:0.4rem}
+.sec-sub{color:var(--text2);font-size:0.875rem}
+.container{max-width:1120px;margin:0 auto;padding:0 1.5rem}
+
+/* ─── BUTTONS ─── */
+.btn{
+  padding:9px 20px;border-radius:8px;font-size:0.86rem;font-weight:500;
+  cursor:pointer;transition:all 0.15s;font-family:'DM Sans',sans-serif;
+  display:inline-flex;align-items:center;gap:6px;border:none;
+}
+.btn-ghost{background:none;border:1px solid var(--border2);color:var(--text2)}
+.btn-ghost:hover{background:var(--bg2);color:var(--text);border-color:var(--border2)}
+.btn-primary{background:var(--accent);color:#060606;font-weight:700}
+.btn-primary:hover{background:#CEFD14;transform:translateY(-1px)}
+.btn-primary:disabled{opacity:0.45;cursor:not-allowed;transform:none}
+.btn-danger{background:rgba(251,113,133,0.12);border:1px solid rgba(251,113,133,0.2);color:var(--danger);font-size:0.72rem;padding:4px 11px;font-weight:500}
+.btn-danger:hover{background:rgba(251,113,133,0.2)}
+.btn-add{
+  display:flex;align-items:center;justify-content:center;gap:6px;
+  background:none;border:1px dashed var(--border2);border-radius:var(--r);
+  color:var(--text2);padding:10px;font-size:0.82rem;cursor:pointer;width:100%;
+  font-family:'DM Sans',sans-serif;transition:all 0.15s;margin-top:0.75rem;
+}
+.btn-add:hover{border-color:var(--accent);color:var(--accent);background:var(--accent-dim)}
+
+/* ─── BUILDER ─── */
+.builder-wrap{display:grid;grid-template-columns:250px 1fr;gap:1.25rem;padding-bottom:5rem}
+.steps-sidebar{position:sticky;top:74px;height:fit-content}
+.steps-box{background:var(--bg1);border:1px solid var(--border);border-radius:var(--rl);overflow:hidden}
+.step-row{
+  display:flex;align-items:center;gap:11px;padding:12px 14px;
+  cursor:pointer;border-bottom:1px solid var(--border);transition:background 0.15s;
+  position:relative;
+}
+.step-row:last-child{border-bottom:none}
+.step-row:hover{background:var(--bg2)}
+.step-row.active{background:var(--accent-dim)}
+.step-row.active::before{content:'';position:absolute;left:0;top:0;bottom:0;width:3px;background:var(--accent);border-radius:0 2px 2px 0}
+.step-num{
+  width:25px;height:25px;border-radius:50%;background:var(--bg3);border:1px solid var(--border2);
+  display:flex;align-items:center;justify-content:center;
+  font-size:0.68rem;font-weight:600;color:var(--text3);flex-shrink:0;
+  font-family:'DM Mono',monospace;transition:all 0.2s;
+}
+.step-row.active .step-num{background:var(--accent);border-color:var(--accent);color:#050505}
+.step-row.done .step-num{background:rgba(195,255,0,0.12);border-color:rgba(195,255,0,0.25);color:var(--accent)}
+.step-lbl{font-size:0.81rem;font-weight:500;color:var(--text2)}
+.step-row.active .step-lbl{color:var(--text)}
+.step-row.done .step-lbl{color:var(--text3)}
+
+/* Builder form panel */
+.builder-panel{background:var(--bg1);border:1px solid var(--border);border-radius:var(--rl);padding:2rem}
+.form-step{display:none}
+.form-step.active{display:block}
+.fs-title{font-family:'Syne',sans-serif;font-size:1.25rem;font-weight:700;letter-spacing:-0.015em;margin-bottom:0.2rem}
+.fs-sub{font-size:0.8rem;color:var(--text3);margin-bottom:1.75rem}
+.fg{display:grid;grid-template-columns:1fr 1fr;gap:1rem}
+.frow{display:flex;flex-direction:column;gap:5px}
+.frow.full{grid-column:1/-1}
+label{font-size:0.77rem;font-weight:500;color:var(--text2);letter-spacing:0.01em}
+input,textarea,select{
+  background:var(--bg);border:1px solid var(--border2);border-radius:8px;
+  color:var(--text);font-family:'DM Sans',sans-serif;font-size:0.86rem;
+  padding:9px 13px;outline:none;transition:border 0.15s;width:100%;
+}
+input:focus,textarea:focus,select:focus{
+  border-color:rgba(195,255,0,0.38);
+  box-shadow:0 0 0 3px rgba(195,255,0,0.05);
+}
+input::placeholder,textarea::placeholder{color:var(--text3)}
+select option{background:#17171C;color:var(--text)}
+textarea{min-height:88px;resize:vertical;line-height:1.5}
+
+/* Entry cards (exp/edu) */
+.entry-card{background:var(--bg2);border:1px solid var(--border);border-radius:var(--r);padding:1.25rem;margin-bottom:1rem}
+.entry-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:1rem}
+.entry-lbl{font-size:0.72rem;font-weight:600;text-transform:uppercase;letter-spacing:0.07em;color:var(--text3)}
+
+/* Form nav */
+.form-nav{display:flex;align-items:center;justify-content:space-between;margin-top:2rem;padding-top:1.5rem;border-top:1px solid var(--border)}
+
+/* Review box */
+.review-box{background:var(--bg2);border:1px solid var(--border);border-radius:var(--r);padding:1.5rem;margin-bottom:1.5rem}
+.review-box-lbl{font-size:0.7rem;font-weight:600;text-transform:uppercase;letter-spacing:0.07em;color:var(--text3);margin-bottom:0.9rem}
+
+/* Output */
+.output-area{min-height:320px}
+.output-placeholder{
+  display:flex;flex-direction:column;align-items:center;justify-content:center;
+  min-height:300px;gap:1rem;color:var(--text3);text-align:center;
+}
+.output-acts{display:flex;gap:8px;margin-top:1.25rem;padding-top:1.25rem;border-top:1px solid var(--border);flex-wrap:wrap}
+
+/* ─── RESUME PAPER — exact DOCX replica ─── */
+.resume-paper-wrap{
+  background:#b0b0b0;
+  padding:40px 24px;
+  overflow-x:auto;
+  border-radius:var(--r);
+}
+
+/* Hard reset — isolate from dark theme completely */
+.resume-paper,
+.resume-paper *{
+  all:revert;
+  box-sizing:border-box;
+}
+.resume-paper{
+  background:#ffffff !important;
+  color:#000000 !important;
+  width:794px;
+  min-width:794px;
+  margin:0 auto;
+  padding:68px 68px 68px 68px;
+  font-family:Arial,Helvetica,sans-serif !important;
+  font-size:10pt !important;
+  line-height:1.5 !important;
+  box-shadow:0 4px 24px rgba(0,0,0,0.4);
+  display:block;
+}
+
+/* ── Name: 12pt Bold Center ── */
+.resume-paper .rp-name{
+  display:block;
+  font-family:Arial,Helvetica,sans-serif;
+  font-size:12pt;
+  font-weight:700;
+  text-align:center;
+  color:#000;
+  margin:0 0 4px 0;
+  letter-spacing:0.04em;
+}
+/* ── Job Title: 10pt Center ── */
+.resume-paper .rp-jobtitle{
+  display:block;
+  font-family:Arial,Helvetica,sans-serif;
+  font-size:10pt;
+  font-weight:400;
+  text-align:center;
+  color:#000;
+  margin:0 0 3px 0;
+}
+/* ── Contact: 10pt Center ── */
+.resume-paper .rp-contact{
+  display:block;
+  font-family:Arial,Helvetica,sans-serif;
+  font-size:10pt;
+  font-weight:400;
+  text-align:center;
+  color:#000;
+  margin:0 0 16px 0;
+}
+/* ── Blank spacer line ── */
+.resume-paper .rp-space{
+  display:block;
+  height:5px;
+}
+/* ── Section Header: 12pt Bold + bottom border ── */
+.resume-paper .rp-sec{
+  display:block;
+  font-family:Arial,Helvetica,sans-serif;
+  font-size:12pt;
+  font-weight:700;
+  color:#000;
+  border-bottom:1.5px solid #000;
+  padding-bottom:2px;
+  margin:14px 0 4px 0;
+}
+/* ── Skill Category: 11pt Bold ── */
+.resume-paper .rp-sk-cat{
+  display:block;
+  font-family:Arial,Helvetica,sans-serif;
+  font-size:11pt;
+  font-weight:700;
+  color:#000;
+  margin:5px 0 0 0;
+}
+/* ── Skill Items: 10pt Normal ── */
+.resume-paper .rp-sk-items{
+  display:block;
+  font-family:Arial,Helvetica,sans-serif;
+  font-size:10pt;
+  font-weight:400;
+  color:#000;
+  margin:1px 0 2px 0;
+}
+/* ── Soft Skills body: 10pt justify ── */
+.resume-paper .rp-soft{
+  display:block;
+  font-family:Arial,Helvetica,sans-serif;
+  font-size:10pt;
+  font-weight:400;
+  color:#000;
+  text-align:justify;
+  margin:4px 0 8px 0;
+}
+/* ── Summary: 10pt justify ── */
+.resume-paper .rp-summary{
+  display:block;
+  font-family:Arial,Helvetica,sans-serif;
+  font-size:10pt;
+  font-weight:400;
+  color:#000;
+  text-align:justify;
+  line-height:1.5;
+  margin:4px 0 8px 0;
+}
+/* ── Entry row: title left, date right ── */
+.resume-paper .rp-entry-row{
+  display:flex;
+  justify-content:space-between;
+  align-items:baseline;
+  flex-wrap:nowrap;
+  margin:10px 0 2px 0;
+  gap:8px;
+}
+.resume-paper .rp-entry-title{
+  font-family:Arial,Helvetica,sans-serif;
+  font-size:11pt;
+  font-weight:700;
+  color:#000;
+  flex:1;
+  min-width:0;
+}
+.resume-paper .rp-entry-date{
+  font-family:Arial,Helvetica,sans-serif;
+  font-size:10pt;
+  font-weight:400;
+  color:#000;
+  white-space:nowrap;
+  flex-shrink:0;
+}
+/* ── Bullet list ── */
+.resume-paper .rp-ul{
+  display:block;
+  margin:2px 0 4px 0;
+  padding-left:20px;
+  list-style:disc;
+}
+.resume-paper .rp-ul li{
+  display:list-item;
+  font-family:Arial,Helvetica,sans-serif;
+  font-size:10pt;
+  font-weight:400;
+  color:#000;
+  text-align:justify;
+  line-height:1.45;
+  margin-bottom:2px;
+  list-style:disc;
+}
+/* ── Education row ── */
+.resume-paper .rp-edu-row{
+  display:flex;
+  justify-content:space-between;
+  align-items:baseline;
+  flex-wrap:nowrap;
+  margin:8px 0 2px 0;
+  gap:8px;
+}
+.resume-paper .rp-edu-title{
+  font-family:Arial,Helvetica,sans-serif;
+  font-size:11pt;
+  font-weight:700;
+  color:#000;
+  flex:1;
+}
+.resume-paper .rp-edu-date{
+  font-family:Arial,Helvetica,sans-serif;
+  font-size:10pt;
+  font-weight:400;
+  color:#000;
+  white-space:nowrap;
+  flex-shrink:0;
+}
+.resume-paper .rp-edu-sub{
+  display:block;
+  font-family:Arial,Helvetica,sans-serif;
+  font-size:10pt;
+  font-weight:400;
+  color:#000;
+  margin:1px 0 4px 0;
+}
+/* ── Links: 10pt Center ── */
+.resume-paper .rp-links{
+  display:block;
+  font-family:Arial,Helvetica,sans-serif;
+  font-size:10pt;
+  font-weight:400;
+  text-align:center;
+  color:#000;
+  margin-top:6px;
+}
+
+/* Spinner */
+.spin{width:34px;height:34px;border:2px solid var(--border2);border-top-color:var(--accent);border-radius:50%;animation:rotate 0.7s linear infinite}
+@keyframes rotate{to{transform:rotate(360deg)}}
+.loading-box{display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:280px;gap:1rem;color:var(--text3);font-size:0.83rem}
+
+/* ─── SHARED CHECKER UTILS ─── */
+.cinput-label{font-size:0.85rem;font-weight:600;color:var(--text);display:block;margin-bottom:7px}
+.cinput-hint{font-size:0.75rem;color:var(--text3);margin-bottom:8px;display:block}
+.tags{display:flex;flex-wrap:wrap;gap:5px;line-height:1.6}
+.score-wrap{display:flex;align-items:flex-start;gap:1.5rem;flex-wrap:wrap}
+.score-ring{position:relative;width:110px;height:110px;flex-shrink:0}
+.score-ring svg{display:block}
+.score-inner{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px}
+.score-val{font-family:'Syne',sans-serif;font-size:1.8rem;font-weight:800;line-height:1}
+.score-ats{font-size:0.58rem;text-transform:uppercase;letter-spacing:0.06em;color:var(--text3)}
+.loading-box{display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:200px;gap:1rem;color:var(--text3);font-size:0.83rem}
+.rph{display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:300px;gap:1rem;color:var(--text3);text-align:center;font-size:0.855rem;line-height:1.6}
+.rph-icon{font-size:3rem;opacity:0.2;margin-bottom:0.5rem}
+
+/* ─── CHECKER STEPPER ─── */
+.ck-stepper{
+  display:flex;align-items:center;justify-content:center;
+  gap:0;margin-bottom:2rem;
+}
+.ck-step{
+  display:flex;align-items:center;gap:8px;padding:7px 18px;
+  font-size:0.78rem;font-weight:600;color:var(--text3);
+  border-bottom:2px solid transparent;cursor:pointer;transition:all 0.2s;
+  position:relative;
+}
+.ck-step:hover{color:var(--text2)}
+.ck-step.active{color:var(--accent);border-color:var(--accent)}
+.ck-step.done{color:var(--text2);border-color:var(--border2)}
+.ck-step-num{
+  width:20px;height:20px;border-radius:50%;
+  background:var(--bg3);border:1px solid var(--border2);
+  display:flex;align-items:center;justify-content:center;
+  font-size:0.62rem;font-weight:700;font-family:'DM Mono',monospace;
+  flex-shrink:0;transition:all 0.2s;
+}
+.ck-step.active .ck-step-num{background:var(--accent);border-color:var(--accent);color:#050505}
+.ck-step.done .ck-step-num{background:rgba(195,255,0,0.1);border-color:rgba(195,255,0,0.2);color:var(--accent)}
+.ck-step-sep{width:32px;height:1px;background:var(--border2);flex-shrink:0}
+
+/* ─── CHECKER SCAN STEP ─── */
+.ck-scan-wrap{max-width:640px;margin:0 auto;padding-bottom:5rem}
+.ck-scan-card{background:var(--bg1);border:1px solid var(--border);border-radius:var(--rl);padding:2rem}
+
+/* ─── RESULT TABS ─── */
+.ck-result-area{padding-bottom:5rem}
+.ck-result-tabs{
+  display:flex;align-items:center;gap:2px;
+  border-bottom:1px solid var(--border);margin-bottom:1.75rem;
+}
+.cktab{
+  padding:10px 18px;font-size:0.82rem;font-weight:500;
+  color:var(--text3);cursor:pointer;border:none;background:none;
+  font-family:'DM Sans',sans-serif;border-bottom:2px solid transparent;
+  margin-bottom:-1px;transition:all 0.15s;display:flex;align-items:center;gap:6px;
+}
+.cktab:hover{color:var(--text2)}
+.cktab.active{color:var(--accent);border-bottom-color:var(--accent)}
+.cktab-badge{
+  padding:1px 6px;border-radius:3px;font-size:0.62rem;font-weight:700;
+  background:var(--bg3);color:var(--text3);letter-spacing:0.03em;
+}
+.cktab.active .cktab-badge{background:var(--accent-dim);color:var(--accent)}
+.ck-tab-panel{display:none}
+.ck-tab-panel.active{display:block}
+
+/* ─── REPORT LAYOUT ─── */
+.report-grid{display:grid;grid-template-columns:300px 1fr;gap:1.25rem;align-items:start}
+.report-left{display:flex;flex-direction:column;gap:1.25rem}
+.report-right{display:flex;flex-direction:column;gap:1.25rem}
+.rcard{background:var(--bg1);border:1px solid var(--border);border-radius:var(--rl);padding:1.5rem}
+.rcard-title{font-size:0.68rem;font-weight:700;text-transform:uppercase;letter-spacing:0.08em;color:var(--text3);margin-bottom:1rem}
+
+/* ─── RESUME DOC VIEW ─── */
+.resume-doc-wrap{display:grid;grid-template-columns:1fr 300px;gap:1.25rem;align-items:start}
+.resume-doc-left{display:flex;flex-direction:column;gap:1rem}
+.resume-doc-toolbar{
+  background:var(--bg1);border:1px solid var(--border);border-radius:var(--r);
+  padding:10px 14px;display:flex;align-items:center;gap:8px;flex-wrap:wrap;
+}
+.sug-filter-tabs{display:flex;gap:4px;flex:1;flex-wrap:wrap}
+.sftab{
+  padding:4px 11px;border-radius:4px;font-size:0.72rem;font-weight:600;
+  cursor:pointer;border:1px solid transparent;background:var(--bg3);
+  color:var(--text3);font-family:'DM Sans',sans-serif;transition:all 0.15s;
+  display:flex;align-items:center;gap:4px;
+}
+.sftab:hover{color:var(--text);border-color:var(--border2)}
+.sftab.active{color:#050505;border-color:transparent}
+.sftab[data-cat="all"].active{background:var(--text);color:#050505}
+.sftab[data-cat="content"].active{background:#60A5FA;color:#050505}
+.sftab[data-cat="skills"].active{background:#34D399;color:#050505}
+.sftab[data-cat="format"].active{background:#FBBF24;color:#050505}
+.sftab[data-cat="sections"].active{background:#A78BFA;color:#050505}
+.sftab[data-cat="style"].active{background:#F472B6;color:#050505}
+.sftab-dot{width:7px;height:7px;border-radius:50%;flex-shrink:0}
+.sftab[data-cat="content"] .sftab-dot{background:#60A5FA}
+.sftab[data-cat="skills"] .sftab-dot{background:#34D399}
+.sftab[data-cat="format"] .sftab-dot{background:#FBBF24}
+.sftab[data-cat="sections"] .sftab-dot{background:#A78BFA}
+.sftab[data-cat="style"] .sftab-dot{background:#F472B6}
+.sftab.active .sftab-dot{background:rgba(0,0,0,0.4)}
+
+.toggle-wrap{display:flex;align-items:center;gap:7px;margin-left:auto}
+.toggle-lbl{font-size:0.73rem;font-weight:500;color:var(--text2)}
+.toggle{
+  position:relative;width:36px;height:20px;background:var(--bg3);
+  border-radius:10px;cursor:pointer;transition:background 0.2s;
+  border:1px solid var(--border2);flex-shrink:0;
+}
+.toggle.on{background:var(--accent)}
+.toggle::after{
+  content:'';position:absolute;width:14px;height:14px;top:2px;left:2px;
+  background:#fff;border-radius:50%;transition:transform 0.2s;
+}
+.toggle.on::after{transform:translateX(16px)}
+
+.resume-doc{
+  background:var(--bg1);border:1px solid var(--border);border-radius:var(--r);
+  padding:2rem;font-family:'DM Mono',monospace;font-size:0.795rem;
+  line-height:1.85;white-space:pre-wrap;word-break:break-word;color:var(--text);
+  min-height:400px;position:relative;
+}
+
+/* Inline suggestion highlights */
+.sug-mark{
+  border-radius:2px;cursor:pointer;transition:all 0.15s;position:relative;
+  padding:1px 2px;border-bottom:2px solid transparent;
+}
+.sug-mark[data-cat="content"]{background:rgba(96,165,250,0.12);border-bottom-color:#60A5FA}
+.sug-mark[data-cat="skills"]{background:rgba(52,211,153,0.12);border-bottom-color:#34D399}
+.sug-mark[data-cat="format"]{background:rgba(251,191,36,0.12);border-bottom-color:#FBBF24}
+.sug-mark[data-cat="sections"]{background:rgba(167,139,250,0.12);border-bottom-color:#A78BFA}
+.sug-mark[data-cat="style"]{background:rgba(244,114,182,0.12);border-bottom-color:#F472B6}
+.sug-mark:hover{opacity:0.75;filter:brightness(1.3)}
+.sug-mark.selected{outline:2px solid currentColor;outline-offset:1px}
+.sug-mark.hidden{background:transparent!important;border-bottom-color:transparent!important}
+
+/* improved text */
+.sug-improved{
+  background:rgba(52,211,153,0.14);border-bottom:2px solid #34D399;
+  border-radius:2px;padding:1px 2px;
+}
+
+/* ─── CAKE-STYLE SUGGESTION SIDEBAR ─── */
+.resume-doc-wrap{display:grid;grid-template-columns:300px 1fr;gap:1.25rem;align-items:start}
+.sug-sidebar{
+  background:var(--bg1);border:1px solid var(--border);border-radius:var(--rl);
+  position:sticky;top:74px;max-height:calc(100vh - 90px);overflow-y:auto;
+}
+.sug-sidebar-head{
+  padding:1rem 1.25rem 0.75rem;border-bottom:1px solid var(--border);
+}
+.sug-score-row{display:flex;align-items:center;gap:12px;margin-bottom:0.7rem}
+.sug-score-circle{
+  width:52px;height:52px;border-radius:50%;flex-shrink:0;
+  display:flex;align-items:center;justify-content:center;
+  font-family:'Syne',sans-serif;font-size:1.05rem;font-weight:800;
+  border:3px solid var(--accent);color:var(--accent);
+}
+.sug-score-count{font-family:'Syne',sans-serif;font-size:1rem;font-weight:700;color:var(--text)}
+.sug-score-hint{font-size:0.7rem;color:var(--text3);line-height:1.4;margin-top:2px}
+
+/* Category accordion rows */
+.sug-cat-row{
+  display:flex;align-items:center;justify-content:space-between;
+  padding:10px 1.25rem;cursor:pointer;border-bottom:1px solid var(--border);
+  transition:background 0.15s;
+}
+.sug-cat-row:hover{background:var(--bg2)}
+.sug-cat-row.open{background:var(--bg2)}
+.sug-cat-left{display:flex;align-items:center;gap:8px}
+.sug-cat-bar{
+  width:60px;height:4px;border-radius:2px;flex-shrink:0;
+}
+.sug-cat-name{font-size:0.82rem;font-weight:600;color:var(--text)}
+.sug-cat-count{font-size:0.72rem;color:var(--text3)}
+.sug-cat-arrow{font-size:0.7rem;color:var(--text3);transition:transform 0.2s}
+.sug-cat-row.open .sug-cat-arrow{transform:rotate(180deg)}
+
+/* Suggestion items in accordion */
+.sug-items-group{display:none;border-bottom:1px solid var(--border)}
+.sug-items-group.open{display:block}
+.sug-item{
+  padding:10px 1.25rem;cursor:pointer;border-bottom:1px solid var(--border);
+  transition:background 0.12s;
+}
+.sug-item:last-child{border-bottom:none}
+.sug-item:hover{background:var(--bg3)}
+.sug-item.active{background:rgba(195,255,0,0.04)}
+.sug-item-type{font-size:0.62rem;font-weight:700;text-transform:uppercase;letter-spacing:0.06em;color:var(--text3);margin-bottom:3px}
+.sug-item-reason{font-size:0.78rem;color:var(--text2);line-height:1.5}
+.sug-item-orig{font-size:0.7rem;color:var(--text3);margin-top:4px;font-style:italic;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.sug-item-actions{display:flex;gap:6px;margin-top:8px}
+.sug-apply-btn{
+  padding:4px 12px;border-radius:5px;font-size:0.72rem;font-weight:600;
+  cursor:pointer;border:none;background:var(--accent);color:#050505;
+  font-family:'DM Sans',sans-serif;transition:all 0.15s;
+}
+.sug-apply-btn:hover{background:#CEFD14}
+.sug-apply-btn:disabled{opacity:0.4;cursor:not-allowed}
+.sug-dismiss-btn{
+  padding:4px 12px;border-radius:5px;font-size:0.72rem;font-weight:600;
+  cursor:pointer;border:1px solid var(--border2);background:none;color:var(--text3);
+  font-family:'DM Sans',sans-serif;transition:all 0.15s;
+}
+.sug-dismiss-btn:hover{color:var(--danger);border-color:rgba(251,113,133,0.3)}
+
+/* Suggestion popup preview (like cake.me's floating preview) */
+.sug-popup{
+  position:fixed;z-index:200;background:var(--bg1);border:1px solid var(--border2);
+  border-radius:12px;padding:1rem;width:280px;
+  box-shadow:0 12px 40px rgba(0,0,0,0.5);
+  display:none;
+}
+.sug-popup.visible{display:block}
+.sug-popup-label{font-size:0.65rem;font-weight:700;text-transform:uppercase;letter-spacing:0.07em;color:var(--text3);margin-bottom:6px}
+.sug-popup-preview{
+  font-size:0.82rem;color:var(--text2);line-height:1.6;
+  background:var(--bg2);border-radius:8px;padding:10px 12px;margin-bottom:10px;
+  border-left:3px solid var(--accent);
+}
+.sug-popup-orig{font-size:0.72rem;color:var(--text3);margin-bottom:8px;font-style:italic;text-decoration:line-through}
+.sug-popup-actions{display:flex;align-items:center;justify-content:space-between}
+.sug-popup-icons{display:flex;gap:4px}
+.sug-popup-icon{
+  width:28px;height:28px;border-radius:6px;border:1px solid var(--border2);
+  background:none;cursor:pointer;display:flex;align-items:center;justify-content:center;
+  font-size:0.8rem;color:var(--text3);transition:all 0.15s;
+}
+.sug-popup-icon:hover{background:var(--bg2);color:var(--text)}
+.sug-popup-cancel{
+  padding:4px 10px;border-radius:5px;font-size:0.72rem;border:1px solid var(--border2);
+  background:none;color:var(--text2);cursor:pointer;font-family:'DM Sans',sans-serif;
+}
+.sug-popup-cancel:hover{background:var(--bg2)}
+.sug-popup-confirm{
+  padding:5px 14px;border-radius:5px;font-size:0.75rem;font-weight:600;
+  background:var(--accent);color:#050505;border:none;cursor:pointer;
+  font-family:'DM Sans',sans-serif;
+}
+.sug-popup-confirm:hover{background:#CEFD14}
+
+/* Resume document display */
+.resume-doc-right{display:flex;flex-direction:column;gap:1rem}
+.resume-doc-toolbar{
+  background:var(--bg1);border:1px solid var(--border);border-radius:var(--r);
+  padding:9px 14px;display:flex;align-items:center;gap:8px;flex-wrap:wrap;
+}
+.toggle-wrap{display:flex;align-items:center;gap:7px;margin-left:auto}
+.toggle-lbl{font-size:0.73rem;font-weight:500;color:var(--text2)}
+.toggle{
+  position:relative;width:36px;height:20px;background:var(--bg3);
+  border-radius:10px;cursor:pointer;transition:background 0.2s;
+  border:1px solid var(--border2);flex-shrink:0;
+}
+.toggle.on{background:var(--accent)}
+.toggle::after{
+  content:'';position:absolute;width:14px;height:14px;top:2px;left:2px;
+  background:#fff;border-radius:50%;transition:transform 0.2s;
+}
+.toggle.on::after{transform:translateX(16px)}
+.resume-doc{
+  background:var(--bg1);border:1px solid var(--border);border-radius:var(--r);
+  padding:2rem 2.25rem;font-family:'DM Sans',sans-serif;font-size:0.88rem;
+  line-height:1.9;color:var(--text);min-height:500px;position:relative;
+  white-space:pre-wrap;word-break:break-word;
+}
+/* highlight marks in resume doc */
+.sug-mark{
+  border-radius:2px;cursor:pointer;padding:1px 1px;
+  border-bottom:2px solid transparent;transition:all 0.15s;
+}
+.sug-mark[data-cat="content"]{background:rgba(96,165,250,0.13);border-bottom-color:#60A5FA}
+.sug-mark[data-cat="skills"]{background:rgba(52,211,153,0.13);border-bottom-color:#34D399}
+.sug-mark[data-cat="format"]{background:rgba(251,191,36,0.13);border-bottom-color:#FBBF24}
+.sug-mark[data-cat="sections"]{background:rgba(167,139,250,0.13);border-bottom-color:#A78BFA}
+.sug-mark[data-cat="style"]{background:rgba(244,114,182,0.13);border-bottom-color:#F472B6}
+.sug-mark:hover,.sug-mark.active{filter:brightness(1.5);outline:1px solid currentColor}
+.sug-mark.dismissed{background:transparent!important;border-bottom-color:transparent!important;cursor:default}
+.sug-applied{background:rgba(52,211,153,0.15);border-bottom:2px solid #34D399;border-radius:2px;padding:1px 1px}
+
+@media(max-width:900px){
+  .resume-doc-wrap{grid-template-columns:1fr}
+  .sug-sidebar{position:static;max-height:none}
+}
+
+/* ─── COVER LETTER ─── */
+.cl-wrap{display:grid;grid-template-columns:1fr 280px;gap:1.25rem;align-items:start}
+.cl-doc{
+  background:var(--bg1);border:1px solid var(--border);border-radius:var(--r);
+  padding:2rem;font-size:0.875rem;line-height:1.85;color:var(--text);white-space:pre-wrap;
+}
+.cl-actions{
+  background:var(--bg1);border:1px solid var(--border);border-radius:var(--rl);
+  padding:1.25rem;position:sticky;top:74px;
+}
+.cl-actions-title{font-size:0.7rem;font-weight:700;text-transform:uppercase;letter-spacing:0.08em;color:var(--text3);margin-bottom:1rem}
+.cl-stat{
+  display:flex;justify-content:space-between;align-items:center;
+  padding:8px 0;border-bottom:1px solid var(--border);font-size:0.8rem;
+}
+.cl-stat:last-of-type{border-bottom:none}
+.cl-stat-key{color:var(--text3)}
+.cl-stat-val{color:var(--text);font-weight:500}
+
+@media(max-width:900px){
+  .report-grid,.resume-doc-wrap,.cl-wrap{grid-template-columns:1fr}
+  .sug-panel,.cl-actions{position:static}
+}
+
+/* Toast */
+.toast{
+  position:fixed;bottom:1.75rem;right:1.75rem;
+  background:var(--bg3);border:1px solid var(--border2);
+  border-radius:8px;padding:10px 18px;font-size:0.84rem;color:var(--text);
+  transform:translateY(70px);opacity:0;transition:all 0.28s;z-index:999;
+}
+.toast.show{transform:translateY(0);opacity:1}
+
+/* Progress bar */
+.progress-bar{height:2px;background:var(--bg3);border-radius:2px;margin-bottom:1.75rem;overflow:hidden}
+.progress-fill{height:100%;background:var(--accent);border-radius:2px;transition:width 0.4s ease}
+
+/* ─── INPUT TABS ─── */
+.input-tabs{display:flex;background:var(--bg3);border-radius:7px;padding:2px;gap:2px}
+.itab{padding:5px 13px;border-radius:5px;font-size:0.75rem;font-weight:500;cursor:pointer;border:none;background:none;color:var(--text2);font-family:'DM Sans',sans-serif;transition:all 0.15s;letter-spacing:0.01em}
+.itab.active{background:var(--bg1);color:var(--text);box-shadow:0 1px 3px rgba(0,0,0,0.4)}
+
+/* ─── DROPZONE ─── */
+.dropzone{
+  border:1.5px dashed var(--border2);border-radius:var(--r);
+  padding:2rem 1.25rem;text-align:center;cursor:pointer;
+  transition:all 0.22s;background:var(--bg);position:relative;
+}
+.dropzone:hover,.dropzone.dragover{border-color:var(--accent);background:var(--accent-dim);border-style:solid}
+.dz-icon{font-size:1.8rem;margin-bottom:0.6rem;display:block;opacity:0.4;transition:opacity 0.2s}
+.dropzone:hover .dz-icon,.dropzone.dragover .dz-icon{opacity:0.9;color:var(--accent)}
+.dz-title{font-size:0.875rem;font-weight:600;color:var(--text);margin-bottom:0.3rem}
+.dz-sub{font-size:0.75rem;color:var(--text3);line-height:1.5}
+.dz-formats{display:flex;align-items:center;justify-content:center;gap:6px;margin-top:0.75rem}
+.dz-fmt{padding:2px 8px;border-radius:3px;font-size:0.65rem;font-weight:700;letter-spacing:0.06em;border:1px solid var(--border2);color:var(--text3)}
+
+/* ─── FILE STATUS ─── */
+.fstatus{
+  display:flex;align-items:center;gap:10px;
+  padding:10px 13px;border-radius:8px;margin-top:9px;
+  background:var(--bg2);border:1px solid var(--border);
+  font-size:0.82rem;transition:all 0.2s;
+}
+.fstatus.success{border-color:rgba(52,211,153,0.28);background:rgba(52,211,153,0.05)}
+.fstatus.error{border-color:rgba(251,113,133,0.28);background:rgba(251,113,133,0.05)}
+.fstatus.loading{border-color:rgba(195,255,0,0.2);background:rgba(195,255,0,0.04)}
+.fstatus-icon{font-size:1.1rem;flex-shrink:0}
+.fstatus-info{flex:1;min-width:0}
+.fstatus-name{font-weight:600;color:var(--text);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;font-size:0.83rem}
+.fstatus-detail{font-size:0.72rem;color:var(--text3);margin-top:1px}
+.fstatus-clear{cursor:pointer;color:var(--text3);padding:3px 8px;border-radius:4px;border:1px solid transparent;background:none;font-size:0.75rem;font-family:'DM Sans',sans-serif;transition:all 0.15s}
+.fstatus-clear:hover{color:var(--danger);border-color:rgba(251,113,133,0.25);background:rgba(251,113,133,0.08)}
+
+/* ─── CHAR COUNT ─── */
+.char-count{font-size:0.7rem;color:var(--text3);text-align:right;margin-top:4px}
+
+.nav-btn.busy-order-btn{display:inline-flex;align-items:center;gap:6px;padding:4px 12px 4px 6px;border:1px solid rgba(210,40,80,0.3);color:#F472B6}
+.nav-btn.busy-order-btn:hover{background:rgba(210,40,80,0.1);border-color:rgba(210,40,80,0.5);color:#fb7185}
+.busy-order-btn{display:flex!important;align-items:center;gap:7px;padding:4px 12px 4px 6px!important}
+.bo-logo{width:26px;height:26px;border-radius:5px;object-fit:cover;flex-shrink:0;display:block}
+
+/* scrollbar */
+::-webkit-scrollbar{width:5px}
+::-webkit-scrollbar-track{background:var(--bg)}
+::-webkit-scrollbar-thumb{background:var(--bg3);border-radius:3px}
+::-webkit-scrollbar-thumb:hover{background:var(--bg2)}
+
+@media(max-width:768px){
+  .builder-wrap,.checker-wrap,.feat-grid{grid-template-columns:1fr}
+  .fg{grid-template-columns:1fr}
+  .steps-sidebar{position:static}
+  .hero-title{font-size:2.6rem}
+}
+</style>
+</head>
+<body>
+
+<div class="toast" id="toast"></div>
+
+<!-- ═══ NAV ═══ -->
+<nav>
+  <div class="logo" onclick="switchView('home')">Future<span>_Me</span></div>
+  <div class="nav-links">
+    <button class="nav-btn" id="nb-builder" onclick="switchView('builder')">✦ Resume Builder</button>
+    <button class="nav-btn" id="nb-checker" onclick="switchView('checker')">◎ Resume Checker</button>
+    <button class="nav-btn busy-order-btn" onclick="window.open('https://busyorder.co.in', '_blank')" title="Visit Busy Order">
+      <img src="data:image/png;base64,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" alt="Busy Order logo" class="bo-logo">
+      <span>Busy Order</span>
+    </button>
+  </div>
+</nav>
+
+
+<!-- ═══ HOME ═══ -->
+<div id="view-home" class="view active">
+  <section class="hero">
+    <div class="hero-eyebrow"><span class="eyebrow-dot"></span>Powered by Gemini AI</div>
+    <h1 class="hero-title">Design your<br><em>Future,</em> right now.</h1>
+    <p class="hero-sub">Two AI-powered tools to craft a perfect resume and ensure it passes every ATS filter. Your dream role is closer than you think.</p>
+    <div class="feat-grid">
+      <div class="feat-card" onclick="switchView('builder')">
+        <div class="feat-badge">AI Builder</div>
+        <div class="feat-icon">✦</div>
+        <div class="feat-card-title">Resume Builder</div>
+        <p class="feat-card-desc">Answer a few guided questions — our AI writes a polished, keyword-rich resume tailored to your experience and target role. Powered by Gemini 2.5 Flash. Export-ready in minutes.</p>
+        <div class="feat-cta">Start building
+          <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M1 7h12M7 1l6 6-6 6" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </div>
+      </div>
+      <div class="feat-card" onclick="switchView('checker')">
+        <div class="feat-badge">AI Checker</div>
+        <div class="feat-icon">◎</div>
+        <div class="feat-card-title">Resume Checker</div>
+        <p class="feat-card-desc">Paste your resume + a job description. Get an instant ATS score, keyword gap analysis, and actionable suggestions powered by Gemini 2.5 Flash to maximize interview chances.</p>
+        <div class="feat-cta">Analyze now
+          <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M1 7h12M7 1l6 6-6 6" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </div>
+      </div>
+    </div>
+  </section>
+</div>
+
+<!-- ═══ BUILDER ═══ -->
+<div id="view-builder" class="view">
+  <div class="container">
+    <div class="sec-head">
+      <h2 class="sec-title">AI Resume Builder</h2>
+      <p class="sec-sub">Fill in your details step by step — Gemini AI handles the writing.</p>
+    </div>
+    <div class="builder-wrap">
+
+      <!-- Sidebar -->
+      <div class="steps-sidebar">
+        <div class="steps-box">
+          <div class="step-row active" id="sr-0" onclick="goToStep(0)">
+            <div class="step-num" id="sn-0">01</div>
+            <span class="step-lbl">Personal Info</span>
+          </div>
+          <div class="step-row" id="sr-1" onclick="goToStep(1)">
+            <div class="step-num" id="sn-1">02</div>
+            <span class="step-lbl">About You</span>
+          </div>
+          <div class="step-row" id="sr-2" onclick="goToStep(2)">
+            <div class="step-num" id="sn-2">03</div>
+            <span class="step-lbl">Work Experience</span>
+          </div>
+          <div class="step-row" id="sr-3" onclick="goToStep(3)">
+            <div class="step-num" id="sn-3">04</div>
+            <span class="step-lbl">Projects</span>
+          </div>
+          <div class="step-row" id="sr-4" onclick="goToStep(4)">
+            <div class="step-num" id="sn-4">05</div>
+            <span class="step-lbl">Education</span>
+          </div>
+          <div class="step-row" id="sr-5" onclick="goToStep(5)">
+            <div class="step-num" id="sn-5">06</div>
+            <span class="step-lbl">Skills</span>
+          </div>
+          <div class="step-row" id="sr-6" onclick="goToStep(6)">
+            <div class="step-num" id="sn-6">07</div>
+            <span class="step-lbl">Achievements & Links</span>
+          </div>
+          <div class="step-row" id="sr-7" onclick="goToStep(7)">
+            <div class="step-num" id="sn-7">08</div>
+            <span class="step-lbl">Generate ✦</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Panel -->
+      <div class="builder-panel">
+        <div class="progress-bar"><div class="progress-fill" id="prog-bar" style="width:12.5%"></div></div>
+
+        <!-- Step 0: Personal Info -->
+        <div class="form-step active" id="fs-0">
+          <div class="fs-title">Personal Information</div>
+          <div class="fs-sub">Your header — name, contact, and professional links.</div>
+          <div class="fg">
+            <div class="frow"><label>Full Name *</label><input id="p-name" placeholder="e.g. Krithiga R"></div>
+            <div class="frow"><label>Email *</label><input type="email" id="p-email" placeholder="you@email.com"></div>
+            <div class="frow"><label>Phone</label><input id="p-phone" placeholder="+91 86105 97402"></div>
+            <div class="frow"><label>Location</label><input id="p-location" placeholder="Trichy, Tamil Nadu (Willing to relocate)"></div>
+            <div class="frow"><label>LinkedIn URL</label><input id="p-linkedin" placeholder="linkedin.com/in/yourname"></div>
+            <div class="frow"><label>GitHub URL</label><input id="p-github" placeholder="github.com/busyorder"></div>
+            <div class="frow"><label>Portfolio / Website</label><input id="p-portfolio" placeholder="busyorder.co.in"></div>
+            <div class="frow"><label>Job Title Line</label><input id="p-jobtitle" placeholder="Android Developer | Full-Stack Developer | UI/UX Designer"></div>
+          </div>
+        </div>
+
+        <!-- Step 1: About You -->
+        <div class="form-step" id="fs-1">
+          <div class="fs-title">About You</div>
+          <div class="fs-sub">Help AI write your Professional Summary.</div>
+          <div class="fg">
+            <div class="frow"><label>Target Role *</label><input id="a-role" placeholder="e.g. Application Support Engineer"></div>
+            <div class="frow"><label>Years of Experience</label><input id="a-years" placeholder="e.g. 3+ years"></div>
+            <div class="frow full"><label>Background, Strengths & Career Goal</label>
+              <textarea id="a-summary" style="min-height:110px" placeholder="e.g. Full-Stack Developer & Founder of Busy Order. 3+ years building Android apps and web platforms. Strong in React, Node.js, Kotlin, Firebase. Targeting Application Support Engineer roles in Canada..."></textarea>
+            </div>
+          </div>
+        </div>
+
+        <!-- Step 2: Work Experience -->
+        <div class="form-step" id="fs-2">
+          <div class="fs-title">Work Experience</div>
+          <div class="fs-sub">Add roles — AI enhances bullet points with action verbs and metrics.</div>
+          <div id="exp-list"></div>
+          <button class="btn-add" onclick="addExp()">+ Add Another Role</button>
+        </div>
+
+        <!-- Step 3: Projects -->
+        <div class="form-step" id="fs-3">
+          <div class="fs-title">Projects</div>
+          <div class="fs-sub">Add notable projects — each gets a tech stack tag and bullet points.</div>
+          <div id="proj-list"></div>
+          <button class="btn-add" onclick="addProj()">+ Add Another Project</button>
+        </div>
+
+        <!-- Step 4: Education -->
+        <div class="form-step" id="fs-4">
+          <div class="fs-title">Education</div>
+          <div class="fs-sub">Degrees, diplomas, and final year projects.</div>
+          <div id="edu-list"></div>
+          <button class="btn-add" onclick="addEdu()">+ Add Another Degree</button>
+        </div>
+
+        <!-- Step 5: Skills -->
+        <div class="form-step" id="fs-5">
+          <div class="fs-title">Technical Skills</div>
+          <div class="fs-sub">Organise your stack by category — this section is ATS-critical.</div>
+          <div class="fg">
+            <div class="frow full"><label>Core Languages</label><input id="sk-lang" placeholder="HTML5, CSS3, JavaScript (ES6+), Python, SQL, C, C++"></div>
+            <div class="frow full"><label>Frontend</label><input id="sk-frontend" placeholder="React.js, Next.js, Tailwind CSS, A-Frame, Figma"></div>
+            <div class="frow full"><label>Backend</label><input id="sk-backend" placeholder="Node.js, Express.js, Flask, REST APIs"></div>
+            <div class="frow full"><label>Mobile</label><input id="sk-mobile" placeholder="Kotlin, Java, Firebase, Google Play Store Deployment"></div>
+            <div class="frow full"><label>AI / ML & Generative AI</label><input id="sk-ai" placeholder="TensorFlow, OpenCV, MediaPipe, Speech Recognition API"></div>
+            <div class="frow full"><label>Cloud & DevOps</label><input id="sk-cloud" placeholder="AWS (S3, EC2, CloudFront, RDS), Vercel, Netlify"></div>
+            <div class="frow full"><label>Databases</label><input id="sk-db" placeholder="MongoDB, MySQL, Firebase Firestore"></div>
+            <div class="frow full"><label>Tools</label><input id="sk-tools" placeholder="Git, GitHub, Android Studio, VS Code, Unity 3D"></div>
+            <div class="frow full"><label>Soft Skills & Other</label><input id="sk-soft" placeholder="Communication, Agile, Technical Discussions, Problem-solving"></div>
+          </div>
+        </div>
+
+        <!-- Step 6: Achievements & Links -->
+        <div class="form-step" id="fs-6">
+          <div class="fs-title">Achievements & Links</div>
+          <div class="fs-sub">Accolades, publications, and your professional links.</div>
+          <div class="fg">
+            <div class="frow full"><label>Achievements (one per line)</label>
+              <textarea id="s-achieve" style="min-height:90px" placeholder="Published 2 Android apps on Google Play Store&#10;Founded Busy Order, delivering 15+ projects since 2022&#10;HackerRank Gold Badge in Python"></textarea>
+            </div>
+            <div class="frow full"><label>Certifications (one per line)</label>
+              <textarea id="s-certs" style="min-height:70px" placeholder="AWS Certified Developer&#10;Google Associate Android Developer"></textarea>
+            </div>
+            <div class="frow"><label>Languages Spoken</label><input id="s-lang" placeholder="English (Fluent), Tamil (Native)"></div>
+            <div class="frow"><label>Resume Tone</label>
+              <select id="s-tone">
+                <option value="professional">Professional & Formal</option>
+                <option value="modern" selected>Modern & Crisp</option>
+                <option value="technical">Technical & Detailed</option>
+              </select>
+            </div>
+          </div>
+        </div>
+
+        <!-- Step 7: Generate -->
+        <div class="form-step" id="fs-7">
+          <div class="fs-title">Generate Your Resume ✦</div>
+          <div class="fs-sub">Review your details, then let Gemini AI craft your perfect ATS resume.</div>
+          <div class="review-box">
+            <div class="review-box-lbl">Your Summary</div>
+            <div id="review-body" style="font-size:0.84rem;color:var(--text2);line-height:1.8"></div>
+          </div>
+          <div class="output-area" id="output-area">
+            <div class="output-placeholder">
+              <div style="font-size:2.5rem;opacity:0.15">✦</div>
+              <div style="font-size:0.84rem">Click Generate to create your ATS-optimized resume</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Nav -->
+        <div class="form-nav">
+          <button class="btn btn-ghost" id="btn-prev" onclick="prevStep()" style="visibility:hidden">← Previous</button>
+          <button class="btn btn-primary" id="btn-next" onclick="nextStep()">Continue →</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div id="view-checker" class="view">
+  <div class="container">
+    <div class="sec-head" style="margin-bottom:0.25rem">
+      <h2 class="sec-title">AI Resume Checker</h2>
+      <p class="sec-sub">Upload your resume, paste the job description — get a full AI-powered report.</p>
+    </div>
+
+    <!-- Stepper -->
+    <div class="ck-stepper" id="ck-stepper">
+      <div class="ck-step active" id="cks-0">
+        <div class="ck-step-num" id="ckn-0">1</div><span>Scan</span>
+      </div>
+      <div class="ck-step-sep"></div>
+      <div class="ck-step" id="cks-1">
+        <div class="ck-step-num" id="ckn-1">2</div><span>Report</span>
+      </div>
+      <div class="ck-step-sep"></div>
+      <div class="ck-step" id="cks-2">
+        <div class="ck-step-num" id="ckn-2">3</div><span>Resume</span>
+      </div>
+      <div class="ck-step-sep"></div>
+      <div class="ck-step" id="cks-3">
+        <div class="ck-step-num" id="ckn-3">4</div><span>Cover Letter</span>
+      </div>
+    </div>
+
+    <!-- ── STEP 0: SCAN ── -->
+    <div id="ck-step-0" class="ck-scan-wrap">
+      <div class="ck-scan-card">
+
+        <!-- Resume input -->
+        <div style="margin-bottom:1.25rem">
+          <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px">
+            <span class="cinput-label" style="margin-bottom:0;font-size:0.9rem;font-weight:700">Your Resume</span>
+            <div class="input-tabs">
+              <button class="itab active" id="itab-upload" onclick="switchTab('upload')">⬆ Upload File</button>
+              <button class="itab" id="itab-paste" onclick="switchTab('paste')">✎ Paste Text</button>
+            </div>
+          </div>
+          <div id="tab-upload">
+            <div class="dropzone" id="dropzone"
+                onclick="document.getElementById('file-inp').click()"
+                ondragover="onDragOver(event)" ondragleave="onDragLeave(event)" ondrop="onDrop(event)">
+              <input type="file" id="file-inp" accept=".pdf,.docx,.doc,.txt" style="display:none" onchange="onFileSelect(event)">
+              <span class="dz-icon">⬆</span>
+              <div class="dz-title">Drop your resume here</div>
+              <div class="dz-sub">or click to browse your files</div>
+              <div class="dz-formats">
+                <span class="dz-fmt">PDF</span>
+                <span class="dz-fmt">DOCX</span>
+                <span class="dz-fmt">TXT</span>
+              </div>
+            </div>
+            <div id="file-status" style="display:none"></div>
+          </div>
+          <div id="tab-paste" style="display:none">
+            <textarea id="c-resume-paste" style="min-height:200px" oninput="updateCharCount(this,'cc-resume')"
+              placeholder="Paste your resume text here…"></textarea>
+            <div class="char-count" id="cc-resume">0 characters</div>
+          </div>
+        </div>
+
+        <!-- JD input -->
+        <div style="margin-bottom:1.5rem">
+          <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px">
+            <span class="cinput-label" style="margin-bottom:0;font-size:0.9rem;font-weight:700">Job Description</span>
+            <span style="font-size:0.73rem;color:var(--text3)">Paste the posting you're applying to</span>
+          </div>
+          <textarea id="c-jd" style="min-height:140px" oninput="updateCharCount(this,'cc-jd')"
+            placeholder="We are looking for a Senior Full-Stack Developer with 3+ years of experience in React and Node.js…"></textarea>
+          <div class="char-count" id="cc-jd">0 characters</div>
+        </div>
+
+        <button class="btn btn-primary" style="width:100%;justify-content:center;padding:13px;font-size:0.9rem" onclick="analyzeResume()" id="btn-analyze">
+          Analyze My Resume ◎
+        </button>
+        <div style="margin-top:0.85rem;font-size:0.72rem;color:var(--text3);text-align:center;line-height:1.7">
+          PDF · DOCX · TXT &nbsp;·&nbsp; ~15 seconds &nbsp;·&nbsp; Gemini 2.5 Flash
+        </div>
+      </div>
+    </div>
+
+    <!-- ── STEP 1/2/3 RESULTS ── -->
+    <div id="ck-step-results" style="display:none" class="ck-result-area">
+
+      <!-- Top bar: back + rescan -->
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:1rem">
+        <button class="btn btn-ghost" style="font-size:0.78rem;padding:6px 12px" onclick="goCheckerStep(0)">← New Scan</button>
+        <div style="font-size:0.76rem;color:var(--text3)" id="ck-filename">—</div>
+      </div>
+
+      <!-- Result tabs -->
+      <div class="ck-result-tabs">
+        <button class="cktab active" id="cktab-report" onclick="switchResultTab('report')">
+          📊 Report <span class="cktab-badge" id="ctb-score">—</span>
+        </button>
+        <button class="cktab" id="cktab-resume" onclick="switchResultTab('resume')">
+          📄 Resume <span class="cktab-badge" id="ctb-sugs">—</span>
+        </button>
+        <button class="cktab" id="cktab-coverletter" onclick="switchResultTab('coverletter')">
+          ✉ Cover Letter
+        </button>
+      </div>
+
+      <!-- REPORT TAB -->
+      <div id="ckpanel-report" class="ck-tab-panel active">
+        <div class="report-grid">
+          <div class="report-left">
+            <!-- Score ring -->
+            <div class="rcard" style="text-align:center">
+              <div class="rcard-title" style="text-align:left">ATS Score</div>
+              <div class="score-wrap" style="flex-direction:column;gap:1rem;border:none;margin:0;padding:0">
+                <div class="score-ring" style="margin:0 auto">
+                  <svg width="110" height="110" viewBox="0 0 110 110">
+                    <circle cx="55" cy="55" r="46" fill="none" stroke="var(--bg3)" stroke-width="8" transform="rotate(-90 55 55)"/>
+                    <circle id="score-arc" cx="55" cy="55" r="46" fill="none" stroke="#34D399" stroke-width="8"
+                      stroke-dasharray="289" stroke-dashoffset="289" stroke-linecap="round" transform="rotate(-90 55 55)"/>
+                  </svg>
+                  <div class="score-inner">
+                    <div class="score-val" id="score-val" style="font-size:1.8rem">—</div>
+                    <div class="score-ats">/ 100</div>
+                  </div>
+                </div>
+                <div>
+                  <div id="grade-wrap" style="margin-bottom:0.4rem"></div>
+                  <div id="score-summary" style="font-size:0.8rem;color:var(--text2);line-height:1.6;text-align:left"></div>
+                </div>
+              </div>
+            </div>
+            <!-- Keyword matches -->
+            <div class="rcard">
+              <div class="rcard-title">✓ Keyword Matches</div>
+              <div id="kw-matches" class="tags"></div>
+            </div>
+            <!-- Missing keywords -->
+            <div class="rcard">
+              <div class="rcard-title">✗ Missing Keywords</div>
+              <div id="kw-missing" class="tags"></div>
+            </div>
+          </div>
+          <div class="report-right">
+            <!-- Strengths -->
+            <div class="rcard">
+              <div class="rcard-title">✦ Strengths</div>
+              <div id="rep-strengths"></div>
+            </div>
+            <!-- Improvements -->
+            <div class="rcard">
+              <div class="rcard-title">→ Suggested Improvements</div>
+              <div id="rep-improvements"></div>
+            </div>
+            <!-- Section feedback -->
+            <div class="rcard">
+              <div class="rcard-title">Section Feedback</div>
+              <div id="rep-sections"></div>
+            </div>
+          </div>
+        </div>
+        <div style="margin-top:1.25rem;text-align:center">
+          <button class="btn btn-primary" onclick="switchResultTab('resume')">View Resume with Inline Suggestions →</button>
+        </div>
+      </div>
+
+      <!-- RESUME TAB -->
+      <div id="ckpanel-resume" class="ck-tab-panel">
+        <!-- Popup preview (floating, like cake.me) -->
+        <div class="sug-popup" id="sug-popup">
+          <div class="sug-popup-label">Suggestion Preview</div>
+          <div class="sug-popup-preview" id="sug-popup-text"></div>
+          <div class="sug-popup-orig" id="sug-popup-orig"></div>
+          <div class="sug-popup-actions">
+            <div class="sug-popup-icons">
+              <button class="sug-popup-icon" title="Regenerate suggestion" onclick="regenSuggestion()">↺</button>
+              <button class="sug-popup-icon" title="Thumbs up" onclick="toast('Feedback noted ✓')">👍</button>
+              <button class="sug-popup-icon" title="Thumbs down" onclick="toast('Feedback noted ✓')">👎</button>
+            </div>
+            <div style="display:flex;gap:6px">
+              <button class="sug-popup-cancel" onclick="closePopup()">Cancel</button>
+              <button class="sug-popup-confirm" id="popup-confirm-btn">Confirm</button>
+            </div>
+          </div>
+        </div>
+
+        <div class="resume-doc-wrap">
+          <!-- Left: suggestion sidebar (cake.me style) -->
+          <div class="sug-sidebar" id="sug-sidebar">
+            <div class="sug-sidebar-head">
+              <div class="sug-score-row">
+                <div class="sug-score-circle" id="sug-score-circle">—</div>
+                <div class="sug-score-info">
+                  <div class="sug-score-count" id="sug-count-total">— suggestions</div>
+                  <div class="sug-score-hint">Resumes with a score of 75 or higher are more likely to pass ATS.</div>
+                </div>
+              </div>
+            </div>
+            <!-- Category accordion groups -->
+            <div id="sug-accordion"></div>
+          </div>
+
+          <!-- Right: resume document with toolbar -->
+          <div class="resume-doc-right">
+            <div class="resume-doc-toolbar">
+              <span style="font-size:0.75rem;color:var(--text3)">Click any highlight to see suggestion</span>
+              <div class="toggle-wrap">
+                <span class="toggle-lbl">Show changes</span>
+                <div class="toggle" id="changes-toggle" onclick="toggleShowChanges()" title="Apply all suggestions"></div>
+              </div>
+            </div>
+            <div class="resume-doc" id="resume-doc-body">Loading…</div>
+          </div>
+        </div>
+
+        <div style="margin-top:1.25rem;display:flex;gap:8px;justify-content:center;flex-wrap:wrap">
+          <button class="btn btn-ghost" onclick="copyImprovedResume()">⎘ Copy Resume</button>
+          <button class="btn btn-primary" onclick="downloadCheckerResumePDF()">⬇ Download PDF</button>
+          <button class="btn btn-ghost" onclick="switchResultTab('coverletter')">Generate Cover Letter ✉ →</button>
+        </div>
+      </div>
+
+      <!-- COVER LETTER TAB -->
+      <div id="ckpanel-coverletter" class="ck-tab-panel">
+        <div id="cl-loading" class="loading-box" style="display:none">
+          <div class="spin"></div>
+          <div>Gemini AI is writing your cover letter…</div>
+        </div>
+        <div id="cl-content" style="display:none">
+          <div class="cl-wrap">
+            <div class="cl-doc" id="cl-doc-body"></div>
+            <div class="cl-actions">
+              <div class="cl-actions-title">Cover Letter Info</div>
+              <div class="cl-stat"><span class="cl-stat-key">Tone</span><span class="cl-stat-val" id="cl-tone">Professional</span></div>
+              <div class="cl-stat"><span class="cl-stat-key">Length</span><span class="cl-stat-val" id="cl-length">—</span></div>
+              <div class="cl-stat"><span class="cl-stat-key">Tailored to JD</span><span class="cl-stat-val" style="color:#34D399">✓ Yes</span></div>
+              <div style="margin-top:1rem;display:flex;flex-direction:column;gap:8px">
+                <button class="btn btn-primary" style="width:100%;justify-content:center" onclick="copyCoverLetter()">⎘ Copy Letter</button>
+                <button class="btn btn-primary" style="width:100%;justify-content:center;background:var(--bg2);color:var(--text);border:1px solid var(--border2)" onclick="downloadCoverLetterPDF()">⬇ Download PDF</button>
+                <button class="btn btn-ghost" style="width:100%;justify-content:center" onclick="regenCoverLetter()">↺ Regenerate</button>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="rph" id="cl-placeholder">
+          <div class="rph-icon">✉</div>
+          <div>Your AI-tailored cover letter<br>will appear here after analysis.</div>
+        </div>
+      </div>
+
+    </div><!-- /ck-step-results -->
+  </div>
+</div>
+
+<script>
+// ── STATE ──
+let curStep = 0;
+const totalSteps = 8;
+let expIdx = 0, projIdx = 0, eduIdx = 0;
+
+// ── INIT ──
+function init() { addExp(); addProj(); addEdu(); }
+
+// ── VIEW SWITCH ──
+function switchView(v) {
+  ['home','builder','checker'].forEach(x => {
+    document.getElementById('view-'+x).classList.remove('active');
+  });
+  document.getElementById('view-'+v).classList.add('active');
+  ['builder','checker'].forEach(x => {
+    const el = document.getElementById('nb-'+x);
+    if (el) el.classList.remove('active');
+  });
+  if (v !== 'home') {
+    const nb = document.getElementById('nb-'+v);
+    if (nb) nb.classList.add('active');
+  }
+  window.scrollTo(0,0);
+}
+
+// ── STEPS ──
+function goToStep(n) {
+  for (let i = 0; i < totalSteps; i++) {
+    const sr = document.getElementById('sr-'+i);
+    const sn = document.getElementById('sn-'+i);
+    if (!sr) continue;
+    sr.classList.remove('active','done');
+    if (i < n) { sr.classList.add('done'); sn.textContent = '✓'; }
+    else if (i === n) { sr.classList.add('active'); sn.textContent = String(i+1).padStart(2,'0'); }
+    else { sn.textContent = String(i+1).padStart(2,'0'); }
+  }
+  document.querySelectorAll('.form-step').forEach(el => el.classList.remove('active'));
+  document.getElementById('fs-'+n).classList.add('active');
+  curStep = n;
+  const prog = document.getElementById('prog-bar');
+  if (prog) prog.style.width = ((n+1)/totalSteps*100)+'%';
+  const bp = document.getElementById('btn-prev');
+  const bn = document.getElementById('btn-next');
+  bp.style.visibility = n === 0 ? 'hidden' : 'visible';
+  if (n === totalSteps-1) {
+    bn.textContent = 'Generate Resume ✦';
+    bn.onclick = generateResume;
+    populateReview();
+  } else {
+    bn.textContent = 'Continue →';
+    bn.onclick = nextStep;
+  }
+}
+function nextStep() { if (curStep < totalSteps-1) goToStep(curStep+1); }
+function prevStep() { if (curStep > 0) goToStep(curStep-1); }
+
+// ── EXPERIENCE ──
+function addExp() {
+  const c = document.getElementById('exp-list');
+  const id = expIdx++;
+  const d = document.createElement('div');
+  d.className = 'entry-card'; d.id = 'exp-'+id;
+  d.innerHTML = `
+    <div class="entry-head">
+      <span class="entry-lbl">Role ${id+1}</span>
+      <button class="btn btn-danger" onclick="rem('exp-${id}')">Remove</button>
+    </div>
+    <div class="fg">
+      <div class="frow"><label>Job Title</label><input class="e-title" placeholder="Freelance Full-Stack Developer & Designer"></div>
+      <div class="frow"><label>Role / Type</label><input class="e-role" placeholder="Founder"></div>
+      <div class="frow"><label>Company</label><input class="e-company" placeholder="Busy Order"></div>
+      <div class="frow"><label>Location</label><input class="e-loc" placeholder="Trichy, India"></div>
+      <div class="frow"><label>Start</label><input class="e-start" placeholder="2022"></div>
+      <div class="frow"><label>End</label><input class="e-end" placeholder="Present"></div>
+      <div class="frow full"><label>Key Achievements (one per line or paragraph)</label>
+        <textarea class="e-desc" style="min-height:100px" placeholder="Founded and manage Busy Order, delivering 15+ web and mobile projects&#10;Led end-to-end development, testing, debugging, and deployment&#10;Collaborated with clients to improve product quality..."></textarea>
+      </div>
+    </div>`;
+  c.appendChild(d);
+}
+
+// ── PROJECTS ──
+function addProj() {
+  const c = document.getElementById('proj-list');
+  const id = projIdx++;
+  const d = document.createElement('div');
+  d.className = 'entry-card'; d.id = 'proj-'+id;
+  d.innerHTML = `
+    <div class="entry-head">
+      <span class="entry-lbl">Project ${id+1}</span>
+      <button class="btn btn-danger" onclick="rem('proj-${id}')">Remove</button>
+    </div>
+    <div class="fg">
+      <div class="frow full"><label>Project Name</label><input class="pj-name" placeholder="Skin Cancer Detection Mobile Application"></div>
+      <div class="frow full"><label>Tech Stack</label><input class="pj-stack" placeholder="Python, TensorFlow Lite, OpenCV, Android (Java)"></div>
+      <div class="frow full"><label>Description & Highlights</label>
+        <textarea class="pj-desc" style="min-height:90px" placeholder="Built CNN-based model with TensorFlow Lite&#10;Implemented end-to-end image pipeline from camera to inference&#10;Integrated Firebase for scan history..."></textarea>
+      </div>
+    </div>`;
+  c.appendChild(d);
+}
+
+// ── EDUCATION ──
+function addEdu() {
+  const c = document.getElementById('edu-list');
+  const id = eduIdx++;
+  const d = document.createElement('div');
+  d.className = 'entry-card'; d.id = 'edu-'+id;
+  d.innerHTML = `
+    <div class="entry-head">
+      <span class="entry-lbl">Degree ${id+1}</span>
+      <button class="btn btn-danger" onclick="rem('edu-${id}')">Remove</button>
+    </div>
+    <div class="fg">
+      <div class="frow"><label>Degree / Certification</label><input class="d-degree" placeholder="Master of Computer Applications (MCA)"></div>
+      <div class="frow"><label>Institution</label><input class="d-school" placeholder="Anna University"></div>
+      <div class="frow"><label>Location</label><input class="d-loc" placeholder="Tamil Nadu, India"></div>
+      <div class="frow"><label>Year / Period</label><input class="d-year" placeholder="2016 – 2018"></div>
+      <div class="frow full"><label>Final Year Project / Notable Work (optional)</label><input class="d-project" placeholder="Medical Stock Management System"></div>
+    </div>`;
+  c.appendChild(d);
+}
+
+function rem(id) { const el = document.getElementById(id); if (el) el.remove(); }
+
+// ── COLLECT ──
+function collect() {
+  const exps = [];
+  document.querySelectorAll('#exp-list .entry-card').forEach(card => {
+    exps.push({
+      title:   card.querySelector('.e-title')?.value||'',
+      roleType:card.querySelector('.e-role')?.value||'',
+      company: card.querySelector('.e-company')?.value||'',
+      loc:     card.querySelector('.e-loc')?.value||'',
+      start:   card.querySelector('.e-start')?.value||'',
+      end:     card.querySelector('.e-end')?.value||'',
+      desc:    card.querySelector('.e-desc')?.value||''
+    });
+  });
+  const projs = [];
+  document.querySelectorAll('#proj-list .entry-card').forEach(card => {
+    projs.push({
+      name:  card.querySelector('.pj-name')?.value||'',
+      stack: card.querySelector('.pj-stack')?.value||'',
+      desc:  card.querySelector('.pj-desc')?.value||''
+    });
+  });
+  const edus = [];
+  document.querySelectorAll('#edu-list .entry-card').forEach(card => {
+    edus.push({
+      degree:  card.querySelector('.d-degree')?.value||'',
+      school:  card.querySelector('.d-school')?.value||'',
+      loc:     card.querySelector('.d-loc')?.value||'',
+      year:    card.querySelector('.d-year')?.value||'',
+      project: card.querySelector('.d-project')?.value||''
+    });
+  });
+  return {
+    name:      document.getElementById('p-name')?.value||'',
+    email:     document.getElementById('p-email')?.value||'',
+    phone:     document.getElementById('p-phone')?.value||'',
+    loc:       document.getElementById('p-location')?.value||'',
+    linkedin:  document.getElementById('p-linkedin')?.value||'',
+    github:    document.getElementById('p-github')?.value||'',
+    portfolio: document.getElementById('p-portfolio')?.value||'',
+    jobtitle:  document.getElementById('p-jobtitle')?.value||'',
+    role:      document.getElementById('a-role')?.value||'',
+    years:     document.getElementById('a-years')?.value||'',
+    summary:   document.getElementById('a-summary')?.value||'',
+    exps, projs, edus,
+    skLang:    document.getElementById('sk-lang')?.value||'',
+    skFront:   document.getElementById('sk-frontend')?.value||'',
+    skBack:    document.getElementById('sk-backend')?.value||'',
+    skMobile:  document.getElementById('sk-mobile')?.value||'',
+    skAI:      document.getElementById('sk-ai')?.value||'',
+    skCloud:   document.getElementById('sk-cloud')?.value||'',
+    skDB:      document.getElementById('sk-db')?.value||'',
+    skTools:   document.getElementById('sk-tools')?.value||'',
+    skSoft:    document.getElementById('sk-soft')?.value||'',
+    achieve:   document.getElementById('s-achieve')?.value||'',
+    certs:     document.getElementById('s-certs')?.value||'',
+    lang:      document.getElementById('s-lang')?.value||'',
+    tone:      document.getElementById('s-tone')?.value||'modern'
+  };
+}
+
+function populateReview() {
+  const d = collect();
+  document.getElementById('review-body').innerHTML = `
+    <div style="margin-bottom:0.6rem">
+      <strong style="color:var(--text);font-size:0.95rem">${d.name||'<span style="color:var(--text3)">Name not set</span>'}</strong>
+      ${d.role ? ' &nbsp;→&nbsp; <span style="color:var(--accent);font-size:0.85rem">'+d.role+'</span>' : ''}
+    </div>
+    <div style="font-size:0.8rem;color:var(--text3);line-height:2">
+      📧 ${d.email||'—'} &nbsp; 📱 ${d.phone||'—'} &nbsp; 📍 ${d.loc||'—'}<br>
+      Experience: <strong style="color:var(--text2)">${document.querySelectorAll('#exp-list .entry-card').length}</strong> &nbsp;|&nbsp;
+      Projects: <strong style="color:var(--text2)">${document.querySelectorAll('#proj-list .entry-card').length}</strong> &nbsp;|&nbsp;
+      Education: <strong style="color:var(--text2)">${document.querySelectorAll('#edu-list .entry-card').length}</strong><br>
+      Tone: <span style="color:var(--text2)">${d.tone}</span>
+    </div>`;
+}
+
+// ── GENERATE RESUME ──
+async function generateResume() {
+  const d = collect();
+  if (!d.name || !d.email) { toast('Please fill in your name and email first.'); goToStep(0); return; }
+
+  const btn = document.getElementById('btn-next');
+  btn.disabled = true; btn.textContent = 'Generating...';
+  const out = document.getElementById('output-area');
+  out.innerHTML = '<div class="loading-box"><div class="spin"></div><div>Gemini AI is crafting your ATS resume…</div><div style="font-size:0.75rem;color:var(--text3)">Building perfect DOCX format</div></div>';
+
+  const skillsInput = [
+    d.skLang   ? `Core Languages: ${d.skLang}` : '',
+    d.skFront  ? `Frontend: ${d.skFront}` : '',
+    d.skBack   ? `Backend: ${d.skBack}` : '',
+    d.skMobile ? `Mobile: ${d.skMobile}` : '',
+    d.skAI     ? `AI / ML & Generative AI Tools: ${d.skAI}` : '',
+    d.skCloud  ? `Cloud & DevOps: ${d.skCloud}` : '',
+    d.skDB     ? `Databases: ${d.skDB}` : '',
+    d.skTools  ? `Tools: ${d.skTools}` : '',
+    d.skSoft   ? `Soft Skills & Application Support Competencies: ${d.skSoft}` : ''
+  ].filter(Boolean).join('\n');
+
+  const expInput = d.exps.map(e =>
+    `${e.title}${e.roleType ? ' | ' + e.roleType : ''} | ${e.company}${e.loc ? ' | ' + e.loc : ''} | ${e.start} \u2013 ${e.end}\n${e.desc}`
+  ).join('\n\n');
+
+  const projInput = d.projs.map(p => `${p.name} \u2014 ${p.stack}\n${p.desc}`).join('\n\n');
+  const eduInput  = d.edus.map(e =>
+    `${e.degree} | ${e.school}${e.loc ? ' | ' + e.loc : ''} | ${e.year}${e.project ? '\nProject: ' + e.project : ''}`
+  ).join('\n');
+
+  const prompt = `You are a certified professional resume writer. Generate an ATS-optimized resume as valid JSON only.
+
+CANDIDATE:
+Name: ${d.name}
+Job Title Line: ${d.jobtitle}
+Email: ${d.email} | Phone: ${d.phone} | Location: ${d.loc}
+LinkedIn: ${d.linkedin} | GitHub: ${d.github} | Website: ${d.portfolio}
+Target Role: ${d.role} | Experience: ${d.years}
+Background: ${d.summary}
+
+WORK EXPERIENCE:
+${expInput}
+
+PROJECTS:
+${projInput}
+
+EDUCATION:
+${eduInput}
+
+TECHNICAL SKILLS (use EXACTLY these category names):
+${skillsInput}
+
+ACHIEVEMENTS: ${d.achieve}
+CERTIFICATIONS: ${d.certs}
+LANGUAGES: ${d.lang}
+TONE: ${d.tone}
+
+Return ONLY this exact JSON (no markdown, no fences):
+{
+  "name": "${d.name}",
+  "jobTitleLine": "${d.jobtitle}",
+  "contact": { "email": "${d.email}", "phone": "${d.phone}", "location": "${d.loc}", "linkedin": "${d.linkedin}", "github": "${d.github}", "website": "${d.portfolio}" },
+  "summary": "<3-4 sentence ATS-optimized professional summary>",
+  "technicalSkills": [
+    { "category": "Core Languages", "items": "<comma-separated list>" },
+    { "category": "Frontend", "items": "<list>" },
+    { "category": "Backend", "items": "<list>" },
+    { "category": "Mobile", "items": "<list>" },
+    { "category": "AI / ML & Generative AI Tools", "items": "<list>" },
+    { "category": "Cloud & DevOps", "items": "<list>" },
+    { "category": "Databases", "items": "<list>" },
+    { "category": "Tools", "items": "<list>" },
+    { "category": "Soft Skills & Application Support Competencies", "items": "<list>" }
+  ],
+  "experience": [
+    { "title": "...", "roleType": "...", "company": "...", "location": "...", "start": "...", "end": "...", "bullets": ["<verb + achievement + metric>"] }
+  ],
+  "projects": [
+    { "name": "...", "stack": "...", "bullets": ["..."] }
+  ],
+  "education": [
+    { "degree": "...", "school": "...", "location": "...", "period": "...", "project": "..." }
+  ],
+  "achievements": ["..."],
+  "certifications": ["..."],
+  "links": { "linkedin": "${d.linkedin}", "github": "${d.github}", "website": "${d.portfolio}" }
+}`;
+
+  try {
+    const raw = await geminiCall(prompt);
+    const cleaned = raw.replace(/```json|```/g, '').trim();
+    const data = JSON.parse(cleaned);
+    window._resumeData = data;
+    window._resumeText = buildResumeText(data);
+
+    out.innerHTML = `
+      <div class="resume-paper-wrap">
+        <div class="resume-paper" id="resume-paper-el">${buildResumePaperHTML(data)}</div>
+      </div>
+      <div class="output-acts">
+        <button class="btn btn-ghost" onclick="copyResume()">\u29b8 Copy Text</button>
+        <button class="btn btn-primary" onclick="downloadResumePDF()">\u2b07 Download PDF</button>
+        <button class="btn btn-ghost" onclick="generateResume()">\u21ba Regenerate</button>
+        <button class="btn btn-ghost" onclick="switchView('checker')" style="margin-left:auto">Check Resume \u25ce</button>
+      </div>`;
+  } catch(err) {
+    console.error(err);
+    out.innerHTML = `<div style="color:var(--danger);padding:1rem;font-size:0.84rem;line-height:1.7"><strong>Generation failed.</strong><br>${escHtml(err.message||'Check your Gemini API key.')}</div>`;
+  }
+  btn.disabled = false; btn.textContent = 'Generate Resume \u2726';
+}
+
+// ── BUILD HTML PAPER — exact DOCX replica ──
+function buildResumePaperHTML(d) {
+  const c = d.contact || {};
+  const e2 = s => s ? escHtml(String(s)) : '';
+
+  // ── HEADER ──
+  let h = `<div class="rp-name">${e2(d.name)}</div>`;
+  if (d.jobTitleLine) h += `<div class="rp-jobtitle">${e2(d.jobTitleLine)}</div>`;
+
+  const contactParts = [c.location, c.phone, c.email, c.website].filter(Boolean).join('   |   ');
+  h += `<div class="rp-contact">${e2(contactParts)}</div>`;
+
+  // ── PROFESSIONAL SUMMARY ──
+  if (d.summary) {
+    h += `<span class="rp-sec">PROFESSIONAL SUMMARY</span>
+          <span class="rp-space"></span>
+          <div class="rp-summary">${e2(d.summary)}</div>`;
+  }
+
+  // ── TECHNICAL SKILLS ──
+  const allSkills = (d.technicalSkills || []).filter(s => s.items && String(s.items).trim());
+  const softSkill  = allSkills.find(s => s.category && s.category.toUpperCase().includes('SOFT'));
+  const coreSkills = allSkills.filter(s => !s.category?.toUpperCase().includes('SOFT'));
+
+  if (coreSkills.length) {
+    h += `<span class="rp-sec">TECHNICAL SKILLS</span><span class="rp-space"></span>`;
+    coreSkills.forEach(s => {
+      h += `<span class="rp-sk-cat">${e2(s.category)}</span>
+            <span class="rp-sk-items">${e2(s.items)}</span>`;
+    });
+  }
+
+  // ── SOFT SKILLS ──
+  if (softSkill) {
+    h += `<span class="rp-sec">SOFT SKILLS &amp; APPLICATION SUPPORT COMPETENCIES</span>
+          <span class="rp-space"></span>
+          <div class="rp-soft">${e2(softSkill.items)}</div>`;
+  }
+
+  // ── PROFESSIONAL EXPERIENCE ──
+  if ((d.experience || []).length) {
+    h += `<span class="rp-sec">PROFESSIONAL EXPERIENCE</span><span class="rp-space"></span>`;
+    d.experience.forEach(ex => {
+      const titleParts = [ex.title, ex.roleType, ex.company, ex.location].filter(Boolean).join(' | ');
+      const dateStr    = [ex.start, ex.end].filter(Boolean).join(' \u2013 ');
+      h += `<div class="rp-entry-row">
+              <span class="rp-entry-title">${e2(titleParts)}</span>
+              ${dateStr ? `<span class="rp-entry-date">${e2(dateStr)}</span>` : ''}
+            </div>
+            <ul class="rp-ul">${(ex.bullets||[]).map(b=>`<li>${e2(b)}</li>`).join('')}</ul>`;
+    });
+  }
+
+  // ── PROJECTS ──
+  if ((d.projects || []).length) {
+    h += `<span class="rp-sec">PROJECTS</span><span class="rp-space"></span>`;
+    d.projects.forEach(p => {
+      const ptitle = p.stack ? `${e2(p.name)} \u2014 ${e2(p.stack)}` : e2(p.name);
+      h += `<div class="rp-entry-row">
+              <span class="rp-entry-title">${ptitle}</span>
+            </div>
+            <ul class="rp-ul">${(p.bullets||[]).map(b=>`<li>${e2(b)}</li>`).join('')}</ul>`;
+    });
+  }
+
+  // ── EDUCATION ──
+  if ((d.education || []).length) {
+    h += `<span class="rp-sec">EDUCATION</span><span class="rp-space"></span>`;
+    d.education.forEach(ed => {
+      const titleParts = [ed.degree, ed.school, ed.location].filter(Boolean).join(' | ');
+      const dateStr    = ed.period || ed.year || '';
+      h += `<div class="rp-edu-row">
+              <span class="rp-edu-title">${e2(titleParts)}</span>
+              ${dateStr ? `<span class="rp-edu-date">${e2(dateStr)}</span>` : ''}
+            </div>`;
+      if (ed.project) h += `<div class="rp-edu-sub">Final Year Project: ${e2(ed.project)}</div>`;
+    });
+  }
+
+  // ── ACHIEVEMENTS & ACTIVITIES ──
+  const ach = [...(d.achievements||[]),...(d.certifications||[])].filter(Boolean);
+  if (ach.length) {
+    h += `<span class="rp-sec">ACHIEVEMENTS &amp; ACTIVITIES</span><span class="rp-space"></span>
+          <ul class="rp-ul">${ach.map(a=>`<li>${e2(a)}</li>`).join('')}</ul>`;
+  }
+
+  // ── LINKS ──
+  const lks = d.links || {};
+  const lkParts = [
+    lks.linkedin ? `LinkedIn: ${e2(lks.linkedin)}` : null,
+    lks.github   ? `GitHub: ${e2(lks.github)}`     : null,
+    lks.website  ? `Website: ${e2(lks.website)}`   : null
+  ].filter(Boolean);
+  if (lkParts.length) {
+    h += `<span class="rp-sec">LINKS</span><span class="rp-space"></span>
+          <div class="rp-links">${lkParts.join('   |   ')}</div>`;
+  }
+
+  return h;
+}
+
+// ── BUILD PLAIN TEXT — matches DOCX order ──
+function buildResumeText(d) {
+  const c = d.contact||{};
+  const nl = '\n';
+  let lines = [];
+  lines.push(d.name||'');
+  if (d.jobTitleLine) lines.push(d.jobTitleLine);
+  const contactLine=[c.location,c.phone,c.email,c.website].filter(Boolean).join(' | ');
+  lines.push(contactLine,'');
+
+  lines.push('PROFESSIONAL SUMMARY');
+  lines.push(d.summary||'','');
+
+  const skills=(d.technicalSkills||[]).filter(s=>s.items&&s.items.trim());
+  const soft=skills.find(s=>s.category?.toUpperCase().includes('SOFT'));
+  const coreSkills=skills.filter(s=>!s.category?.toUpperCase().includes('SOFT'));
+  if(coreSkills.length){lines.push('TECHNICAL SKILLS'); coreSkills.forEach(s=>{lines.push(s.category); lines.push(s.items);}); lines.push('');}
+  if(soft){lines.push('SOFT SKILLS & APPLICATION SUPPORT COMPETENCIES'); lines.push(soft.items,'');}
+
+  if((d.experience||[]).length){
+    lines.push('PROFESSIONAL EXPERIENCE');
+    d.experience.forEach(e=>{
+      const tl=[e.title,e.roleType,e.company,e.location].filter(Boolean).join(' | ');
+      lines.push(`${tl}        ${e.start} – ${e.end}`);
+      (e.bullets||[]).forEach(b=>lines.push('• '+b));
+      lines.push('');
+    });
+  }
+  if((d.projects||[]).length){
+    lines.push('PROJECTS');
+    d.projects.forEach(p=>{
+      lines.push(p.stack?`${p.name} — ${p.stack}`:p.name);
+      (p.bullets||[]).forEach(b=>lines.push('• '+b));
+      lines.push('');
+    });
+  }
+  if((d.education||[]).length){
+    lines.push('EDUCATION');
+    d.education.forEach(e=>{
+      const tl=[e.degree,e.school,e.location].filter(Boolean).join(' | ');
+      lines.push(`${tl}        ${e.period||e.year||''}`);
+      if(e.project)lines.push('Final Year Project: '+e.project);
+      lines.push('');
+    });
+  }
+  const ach=[...(d.achievements||[]),...(d.certifications||[])].filter(Boolean);
+  if(ach.length){lines.push('ACHIEVEMENTS & ACTIVITIES'); ach.forEach(a=>lines.push('• '+a)); lines.push('');}
+  const lks=d.links||{};
+  const lp=[lks.linkedin?'LinkedIn: '+lks.linkedin:null,lks.github?'GitHub: '+lks.github:null,lks.website?'Website: '+lks.website:null].filter(Boolean);
+  if(lp.length){lines.push('LINKS'); lines.push(lp.join('   |   '));}
+  return lines.join(nl);
+}
+
+
+// ── COPY RESUME TEXT ──// ── COPY RESUME TEXT ──
+function copyResume() {
+  if (window._resumeText) {
+    navigator.clipboard.writeText(window._resumeText).then(() => toast('Resume copied to clipboard ✓'));
+  }
+}
+
+// ── DOWNLOAD RESUME PDF — exact DOCX replica ──
+async function downloadResumePDF() {
+  const btn = event?.target;
+  if (btn) { btn.disabled = true; btn.textContent = '⏳ Generating PDF…'; }
+  try {
+    const { jsPDF } = window.jspdf;
+    const doc = new jsPDF({ orientation: 'portrait', unit: 'mm', format: 'a4' });
+    const d = window._resumeData;
+    if (!d) throw new Error('No resume data. Please generate first.');
+
+    // A4: 210×297mm. Margins match DOCX (approx 2.54cm = 25.4mm each side)
+    const ML = 19, MR = 19, MT = 19, PW = 210;
+    const CW = PW - ML - MR;
+    let y = MT;
+
+    const chk = (need = 5) => { if (y + need > 278) { doc.addPage(); y = MT; } };
+
+    const lh = (pt) => pt * 0.352778 * 1.5; // line height in mm
+
+    const writeLine = (text, x, w, pt, style, color) => {
+      doc.setFontSize(pt);
+      doc.setFont('helvetica', style || 'normal');
+      doc.setTextColor(...(color || [0, 0, 0]));
+      const lines = doc.splitTextToSize(String(text || ''), w);
+      lines.forEach(l => { chk(lh(pt)); doc.text(l, x, y); y += lh(pt); });
+    };
+
+    const writeCenter = (text, pt, style) => {
+      doc.setFontSize(pt);
+      doc.setFont('helvetica', style || 'normal');
+      doc.setTextColor(0, 0, 0);
+      const lines = doc.splitTextToSize(String(text || ''), CW);
+      lines.forEach(l => {
+        chk(lh(pt));
+        doc.text(l, PW / 2, y, { align: 'center' });
+        y += lh(pt);
+      });
+    };
+
+    const secHeader = (title) => {
+      chk(10); y += 3;
+      doc.setFontSize(12); doc.setFont('helvetica', 'bold'); doc.setTextColor(0, 0, 0);
+      doc.text(title.toUpperCase(), ML, y);
+      y += 1.5;
+      doc.setDrawColor(0, 0, 0); doc.setLineWidth(0.4);
+      doc.line(ML, y, PW - MR, y);
+      y += lh(10);
+    };
+
+    const bullet = (text) => {
+      doc.setFontSize(10); doc.setFont('helvetica', 'normal'); doc.setTextColor(0, 0, 0);
+      const bIndent = 4;
+      const bw = doc.getTextWidth('• ');
+      const lines = doc.splitTextToSize(String(text || ''), CW - bIndent - bw);
+      chk(lh(10) * lines.length + 1);
+      lines.forEach((l, i) => {
+        if (i === 0) doc.text('•', ML + bIndent, y);
+        doc.text(l, ML + bIndent + bw, y);
+        y += lh(10);
+      });
+    };
+
+    const c = d.contact || {};
+
+    // ── NAME: 12pt Bold Center ──
+    doc.setFontSize(12); doc.setFont('helvetica', 'bold'); doc.setTextColor(0, 0, 0);
+    doc.text((d.name || '').toUpperCase(), PW / 2, y, { align: 'center' });
+    y += lh(12) + 1;
+
+    // ── JOB TITLE: 10pt Center ──
+    if (d.jobTitleLine) { writeCenter(d.jobTitleLine, 10, 'normal'); }
+
+    // ── CONTACT: 10pt Center ──
+    const cl = [c.location, c.phone, c.email, c.website].filter(Boolean).join('   |   ');
+    writeCenter(cl, 10, 'normal');
+    y += 2;
+
+    // ── PROFESSIONAL SUMMARY ──
+    if (d.summary) {
+      secHeader('Professional Summary');
+      doc.setFontSize(10); doc.setFont('helvetica', 'normal'); doc.setTextColor(0, 0, 0);
+      const sLines = doc.splitTextToSize(d.summary, CW);
+      sLines.forEach(l => { chk(lh(10)); doc.text(l, ML, y); y += lh(10); });
+      y += 2;
+    }
+
+    // ── TECHNICAL SKILLS ──
+    const allSkills = (d.technicalSkills || []).filter(s => s.items && s.items.trim());
+    const softSkill = allSkills.find(s => s.category?.toUpperCase().includes('SOFT'));
+    const coreSkills = allSkills.filter(s => !s.category?.toUpperCase().includes('SOFT'));
+
+    if (coreSkills.length) {
+      secHeader('Technical Skills');
+      coreSkills.forEach(s => {
+        chk(lh(11) + lh(10) + 2);
+        // Category: 11pt Bold
+        doc.setFontSize(11); doc.setFont('helvetica', 'bold'); doc.setTextColor(0, 0, 0);
+        doc.text(s.category || '', ML, y); y += lh(11);
+        // Items: 10pt Normal
+        doc.setFontSize(10); doc.setFont('helvetica', 'normal');
+        const iLines = doc.splitTextToSize(s.items || '', CW);
+        iLines.forEach(l => { chk(lh(10)); doc.text(l, ML, y); y += lh(10); });
+        y += 1;
+      });
+    }
+
+    // ── SOFT SKILLS ──
+    if (softSkill) {
+      secHeader('Soft Skills & Application Support Competencies');
+      doc.setFontSize(10); doc.setFont('helvetica', 'normal'); doc.setTextColor(0, 0, 0);
+      const sfLines = doc.splitTextToSize(softSkill.items || '', CW);
+      sfLines.forEach(l => { chk(lh(10)); doc.text(l, ML, y); y += lh(10); });
+      y += 2;
+    }
+
+    // ── PROFESSIONAL EXPERIENCE ──
+    if ((d.experience || []).length) {
+      secHeader('Professional Experience');
+      d.experience.forEach(ex => {
+        const titleStr = [ex.title, ex.roleType, ex.company, ex.location].filter(Boolean).join(' | ');
+        const dateStr = [ex.start, ex.end].filter(Boolean).join(' – ');
+        chk(lh(11) + 2);
+        doc.setFontSize(11); doc.setFont('helvetica', 'bold'); doc.setTextColor(0, 0, 0);
+        const dw = dateStr ? doc.getTextWidth(dateStr) + 1 : 0;
+        const titleLines = doc.splitTextToSize(titleStr, CW - dw);
+        doc.text(titleLines[0] || '', ML, y);
+        if (dateStr) {
+          doc.setFontSize(10); doc.setFont('helvetica', 'normal');
+          doc.text(dateStr, PW - MR - doc.getTextWidth(dateStr), y);
+        }
+        y += lh(11);
+        titleLines.slice(1).forEach(l => {
+          doc.setFontSize(11); doc.setFont('helvetica', 'bold');
+          chk(lh(11)); doc.text(l, ML, y); y += lh(11);
+        });
+        (ex.bullets || []).forEach(b => bullet(b));
+        y += 2;
+      });
+    }
+
+    // ── PROJECTS ──
+    if ((d.projects || []).length) {
+      secHeader('Projects');
+      d.projects.forEach(p => {
+        const ptitle = p.stack ? `${p.name} — ${p.stack}` : (p.name || '');
+        chk(lh(11) + 2);
+        doc.setFontSize(11); doc.setFont('helvetica', 'bold'); doc.setTextColor(0, 0, 0);
+        const ptLines = doc.splitTextToSize(ptitle, CW);
+        ptLines.forEach(l => { chk(lh(11)); doc.text(l, ML, y); y += lh(11); });
+        (p.bullets || []).forEach(b => bullet(b));
+        y += 2;
+      });
+    }
+
+    // ── EDUCATION ──
+    if ((d.education || []).length) {
+      secHeader('Education');
+      d.education.forEach(ed => {
+        const tStr = [ed.degree, ed.school, ed.location].filter(Boolean).join(' | ');
+        const yrStr = ed.period || ed.year || '';
+        chk(lh(11) + 2);
+        doc.setFontSize(11); doc.setFont('helvetica', 'bold'); doc.setTextColor(0, 0, 0);
+        const yw = yrStr ? doc.getTextWidth(yrStr) + 1 : 0;
+        const etLines = doc.splitTextToSize(tStr, CW - yw);
+        doc.text(etLines[0] || '', ML, y);
+        if (yrStr) {
+          doc.setFontSize(10); doc.setFont('helvetica', 'normal');
+          doc.text(yrStr, PW - MR - doc.getTextWidth(yrStr), y);
+        }
+        y += lh(11);
+        etLines.slice(1).forEach(l => {
+          doc.setFontSize(11); doc.setFont('helvetica', 'bold');
+          chk(lh(11)); doc.text(l, ML, y); y += lh(11);
+        });
+        if (ed.project) {
+          doc.setFontSize(10); doc.setFont('helvetica', 'normal');
+          writeLine('Final Year Project: ' + ed.project, ML, CW, 10, 'normal');
+        }
+        y += 2;
+      });
+    }
+
+    // ── ACHIEVEMENTS & ACTIVITIES ──
+    const ach = [...(d.achievements || []), ...(d.certifications || [])].filter(Boolean);
+    if (ach.length) {
+      secHeader('Achievements & Activities');
+      ach.forEach(a => bullet(a));
+      y += 1;
+    }
+
+    // ── LINKS ──
+    const lks = d.links || {};
+    const lp = [
+      lks.linkedin ? 'LinkedIn: ' + lks.linkedin : null,
+      lks.github   ? 'GitHub: '   + lks.github   : null,
+      lks.website  ? 'Website: '  + lks.website  : null
+    ].filter(Boolean);
+    if (lp.length) {
+      secHeader('Links');
+      writeCenter(lp.join('   |   '), 10, 'normal');
+    }
+
+    const fname = (d.name || 'Resume').replace(/\s+/g, '_') + '_ATS.pdf';
+    doc.save(fname);
+    toast('✓ PDF downloaded');
+  } catch (err) {
+    console.error(err);
+    toast('PDF error: ' + err.message);
+  }
+  if (btn) { btn.disabled = false; btn.textContent = '⬇ Download PDF'; }
+}
+
+// ── DOWNLOAD CHECKER RESUME AS PDF ──
+function downloadCheckerResumePDF() {
+  const el = document.getElementById('resume-doc-body');
+  if (!el) { toast('No resume to download.'); return; }
+  downloadTextAsPDF(el.innerText || el.textContent, 'Resume_Improved.pdf');
+}
+
+// ── DOWNLOAD COVER LETTER AS PDF ──
+function downloadCoverLetterPDF() {
+  const el = document.getElementById('cl-doc-body');
+  if (!el) { toast('No cover letter to download.'); return; }
+  downloadTextAsPDF(el.textContent, 'Cover_Letter.pdf');
+}
+
+// ── SHARED TEXT → PDF HELPER ──
+function downloadTextAsPDF(text, filename) {
+  try {
+    const { jsPDF } = window.jspdf;
+    const doc = new jsPDF({ orientation:'portrait', unit:'mm', format:'a4' });
+    const margin = 20;
+    const pageW = 210;
+    const contentW = pageW - margin * 2;
+    let y = margin;
+
+    doc.setFontSize(10);
+    doc.setFont('helvetica', 'normal');
+    doc.setTextColor(20,20,20);
+
+    const paragraphs = text.split(/\n/);
+    paragraphs.forEach(para => {
+      const trimmed = para.trim();
+      // Section headers (ALL CAPS lines)
+      if (trimmed && trimmed === trimmed.toUpperCase() && trimmed.length > 2 && !/^\W+$/.test(trimmed)) {
+        if (y > 265) { doc.addPage(); y = margin; }
+        y += 2;
+        doc.setFontSize(9);
+        doc.setFont('helvetica','bold');
+        doc.setTextColor(0,0,0);
+        doc.text(trimmed, margin, y);
+        y += 1.5;
+        doc.setDrawColor(180,180,180);
+        doc.setLineWidth(0.3);
+        doc.line(margin, y, pageW - margin, y);
+        y += 4;
+        doc.setFontSize(9.5);
+        doc.setFont('helvetica','normal');
+        doc.setTextColor(20,20,20);
+      } else if (trimmed === '') {
+        y += 3;
+      } else {
+        const lines = doc.splitTextToSize(para, contentW);
+        lines.forEach(line => {
+          if (y > 272) { doc.addPage(); y = margin; }
+          doc.text(line, margin, y);
+          y += 4.8;
+        });
+      }
+    });
+
+    doc.save(filename);
+    toast(`${filename} downloaded ✓`);
+  } catch(err) {
+    console.error(err);
+    toast('PDF error: ' + err.message);
+  }
+}
+
+// ══════════════════════════════════════════
+// ── GEMINI API ──
+// ══════════════════════════════════════════
+const GEMINI_KEY   = 'AIzaSyAj51ZEsK-7u1E_JBYUEQYT3oR-uBEQOJs'; // ← replace with your key
+const GEMINI_MODELS = ['gemini-2.5-flash', 'gemini-2.0-flash', 'gemini-1.5-flash-latest'];
+const GEMINI_BASE  = 'https://generativelanguage.googleapis.com/v1beta/models';
+
+async function geminiCallModel(model, body) {
+  const url = `${GEMINI_BASE}/${model}:generateContent?key=${GEMINI_KEY}`;
+  const res = await fetch(url, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(body)
+  });
+  const data = await res.json();
+  if (data.error) throw new Error(data.error.message || 'Gemini API error');
+  return data.candidates?.[0]?.content?.parts?.[0]?.text || '';
+}
+
+async function geminiCall(prompt, retries = 2) {
+  const body = {
+    contents: [{ parts: [{ text: prompt }] }],
+    generationConfig: { maxOutputTokens: 8192, temperature: 0.7 }
+  };
+  let lastErr;
+  for (const model of GEMINI_MODELS) {
+    for (let attempt = 0; attempt <= retries; attempt++) {
+      try {
+        if (attempt > 0) {
+          const wait = attempt * 4000;
+          toast(`⏳ Retrying with ${model} in ${attempt * 4}s…`);
+          await new Promise(r => setTimeout(r, wait));
+        }
+        const text = await geminiCallModel(model, body);
+        return text;
+      } catch (err) {
+        lastErr = err;
+        const msg = err.message || '';
+        const isOverload = msg.includes('high demand') || msg.includes('overloaded') ||
+                           msg.includes('503') || msg.includes('429') || msg.includes('quota');
+        const notFound  = msg.includes('not found') || msg.includes('not supported') || msg.includes('404');
+        if (notFound) break; // try next model immediately
+        if (!isOverload) throw err; // non-retryable error — throw immediately
+        // else: overload — retry or try next model
+      }
+    }
+  }
+  throw new Error(`All models busy. Please wait 30 seconds and try again.\n(${lastErr?.message || 'Rate limit'})`);
+}
+
+async function geminiCallWithPDF(base64Data, promptText) {
+  const body = {
+    contents: [{ parts: [
+      { inline_data: { mime_type: 'application/pdf', data: base64Data } },
+      { text: promptText }
+    ]}],
+    generationConfig: { maxOutputTokens: 4096, temperature: 0.2 }
+  };
+  let lastErr;
+  for (const model of GEMINI_MODELS) {
+    for (let attempt = 0; attempt <= 1; attempt++) {
+      try {
+        if (attempt > 0) await new Promise(r => setTimeout(r, 4000));
+        return await geminiCallModel(model, body);
+      } catch (err) {
+        lastErr = err;
+        const msg = err.message || '';
+        if (msg.includes('not found') || msg.includes('not supported')) break;
+        if (!msg.includes('high demand') && !msg.includes('overloaded') &&
+            !msg.includes('503') && !msg.includes('429')) throw err;
+      }
+    }
+  }
+  throw new Error(`PDF extraction failed: ${lastErr?.message}`);
+}
+
+// ══════════════════════════════════════════
+// ── FILE UPLOAD (Checker) ──
+// ══════════════════════════════════════════
+let activeTab = 'upload';
+let parsedResumeText = '';
+
+function switchTab(tab) {
+  activeTab = tab;
+  document.getElementById('tab-upload').style.display = tab==='upload'?'block':'none';
+  document.getElementById('tab-paste').style.display  = tab==='paste' ?'block':'none';
+  document.getElementById('itab-upload').classList.toggle('active', tab==='upload');
+  document.getElementById('itab-paste').classList.toggle('active',  tab==='paste');
+}
+function updateCharCount(el, targetId) {
+  const n = el.value.length;
+  const t = document.getElementById(targetId);
+  if (t) t.textContent = n.toLocaleString()+' character'+(n!==1?'s':'');
+}
+function onDragOver(e)  { e.preventDefault(); document.getElementById('dropzone').classList.add('dragover'); }
+function onDragLeave()  { document.getElementById('dropzone').classList.remove('dragover'); }
+function onDrop(e)      { e.preventDefault(); document.getElementById('dropzone').classList.remove('dragover'); const f=e.dataTransfer?.files?.[0]; if(f) processFile(f); }
+function onFileSelect(e){ const f=e.target.files?.[0]; if(f) processFile(f); e.target.value=''; }
+
+function showFileStatus(state, name, detail) {
+  const el = document.getElementById('file-status');
+  el.style.display = 'flex';
+  const icons = {loading:'⏳',success:'📄',error:'⚠️'};
+  const clearBtn = state!=='loading'?`<button class="fstatus-clear" onclick="clearFile()">✕ Clear</button>`:'';
+  el.className = `fstatus ${state}`;
+  el.innerHTML = `<span class="fstatus-icon">${icons[state]}</span>
+    <div class="fstatus-info">
+      <div class="fstatus-name">${escHtml(name)}</div>
+      <div class="fstatus-detail">${escHtml(detail)}</div>
+    </div>${clearBtn}`;
+}
+function clearFile() {
+  parsedResumeText = '';
+  document.getElementById('file-status').style.display = 'none';
+  document.getElementById('dropzone').style.display = 'block';
+}
+async function processFile(file) {
+  const ext = file.name.split('.').pop().toLowerCase();
+  if (!['pdf','docx','doc','txt'].includes(ext)) {
+    showFileStatus('error', file.name, 'Unsupported format. Use PDF, DOCX, or TXT.'); return;
+  }
+  showFileStatus('loading', file.name, 'Reading file…');
+  document.getElementById('dropzone').style.display = 'none';
+  try {
+    if (ext==='txt' || file.type==='text/plain') {
+      parsedResumeText = (await file.text()).trim();
+      const words = parsedResumeText.split(/\s+/).filter(Boolean).length;
+      showFileStatus('success', file.name, `✓ Loaded · ${words.toLocaleString()} words`);
+    } else if (ext==='pdf') {
+      const base64 = await fileToBase64(file);
+      showFileStatus('loading', file.name, 'Extracting text with Gemini AI…');
+      parsedResumeText = (await geminiCallWithPDF(base64,
+        'Extract and return ONLY the plain text of this resume. Preserve structure. No commentary, no markdown.')).trim();
+      if (!parsedResumeText) throw new Error('No text extracted');
+      const words = parsedResumeText.split(/\s+/).filter(Boolean).length;
+      showFileStatus('success', file.name, `✓ Extracted · ${words.toLocaleString()} words · PDF`);
+    } else {
+      showFileStatus('loading', file.name, 'Parsing DOCX…');
+      parsedResumeText = (await extractDocxText(file)).trim();
+      if (!parsedResumeText) throw new Error('Could not extract text');
+      const words = parsedResumeText.split(/\s+/).filter(Boolean).length;
+      showFileStatus('success', file.name, `✓ Extracted · ${words.toLocaleString()} words · DOCX`);
+    }
+  } catch(err) {
+    parsedResumeText = '';
+    document.getElementById('dropzone').style.display = 'block';
+    showFileStatus('error', file.name, 'Failed: '+err.message);
+  }
+}
+function fileToBase64(file) {
+  return new Promise((resolve,reject) => {
+    const r = new FileReader();
+    r.onload = () => resolve(r.result.split(',')[1]);
+    r.onerror = () => reject(new Error('FileReader error'));
+    r.readAsDataURL(file);
+  });
+}
+async function extractDocxText(file) {
+  if (typeof mammoth === 'undefined') throw new Error('mammoth.js not loaded');
+  const ab = await file.arrayBuffer();
+  const result = await mammoth.extractRawText({arrayBuffer:ab});
+  return result.value || '';
+}
+function getResumeText() {
+  if (activeTab==='upload') return parsedResumeText.trim();
+  return (document.getElementById('c-resume-paste')?.value||'').trim();
+}
+
+// ══════════════════════════════════════════
+// ── CHECKER STATE ──
+// ══════════════════════════════════════════
+let _analysisData     = null;
+let _resumeText_checker = '';
+let _jdText           = '';
+let _showChanges      = false;
+let _appliedIds       = new Set();
+let _dismissedIds     = new Set();
+let _activeSugId      = null;
+let _popupSugId       = null;
+let _clGenerated      = false;
+
+// ── CHECKER STEP NAV ──
+function goCheckerStep(n) {
+  document.getElementById('ck-step-0').style.display       = n===0?'block':'none';
+  document.getElementById('ck-step-results').style.display = n>0 ?'block':'none';
+  [0,1,2,3].forEach(i => {
+    const s  = document.getElementById('cks-'+i);
+    const n2 = document.getElementById('ckn-'+i);
+    if (!s) return;
+    s.classList.remove('active','done');
+    if (i < n)      { s.classList.add('done');  n2.textContent='✓'; }
+    else if (i===n) { s.classList.add('active'); n2.textContent=String(i+1); }
+    else              n2.textContent=String(i+1);
+  });
+  const steps = document.querySelectorAll('.ck-step');
+  steps.forEach((el,i) => {
+    el.style.cursor  = (i===0||_analysisData)?'pointer':'default';
+    el.style.opacity = (i>0 && !_analysisData)?'0.35':'1';
+    el.onclick = () => {
+      if (i===0) goCheckerStep(0);
+      else if (_analysisData) { const m={1:'report',2:'resume',3:'coverletter'}; switchResultTab(m[i]); }
+    };
+  });
+}
+
+// ── RESULT TABS ──
+function switchResultTab(tab) {
+  ['report','resume','coverletter'].forEach(t => {
+    document.getElementById('cktab-'+t)?.classList.remove('active');
+    document.getElementById('ckpanel-'+t)?.classList.remove('active');
+  });
+  document.getElementById('cktab-'+tab)?.classList.add('active');
+  document.getElementById('ckpanel-'+tab)?.classList.add('active');
+  if (tab==='resume')      goCheckerStep(2);
+  else if (tab==='coverletter') { goCheckerStep(3); handleCoverLetterTab(); }
+  else goCheckerStep(1);
+}
+
+// ── ANALYZE RESUME ──
+async function analyzeResume() {
+  const resume = getResumeText();
+  const jd = document.getElementById('c-jd').value.trim();
+  if (!resume) { toast(activeTab==='upload'?'Please upload a resume file.':'Please paste your resume.'); return; }
+  if (!jd)     { toast('Please paste the job description.'); return; }
+
+  _resumeText_checker = resume;
+  _jdText = jd;
+  _appliedIds   = new Set();
+  _dismissedIds = new Set();
+  _showChanges  = false;
+  _activeSugId  = null;
+  _clGenerated  = false;
+  document.getElementById('changes-toggle')?.classList.remove('on');
+
+  const btn = document.getElementById('btn-analyze');
+  btn.disabled = true;
+  btn.innerHTML = '<span class="spin" style="width:16px;height:16px;border-width:2px"></span> Analyzing…';
+
+  const ph = document.getElementById('r-placeholder');
+  const rc = document.getElementById('r-content');
+  if (ph) { ph.style.display='flex'; ph.innerHTML='<div class="spin"></div><div style="font-size:0.83rem;margin-top:0.75rem;color:var(--text3)">Gemini AI is analyzing your resume…</div>'; }
+  if (rc) rc.style.display='none';
+
+  const prompt = `You are an expert ATS resume analyzer and career coach. Analyze this resume against the job description thoroughly.
+
+RESUME:
+${resume}
+
+JOB DESCRIPTION:
+${jd}
+
+Return ONLY valid JSON (no markdown, no fences):
+{
+  "atsScore": <0-100>,
+  "grade": "<A+|A|A-|B+|B|B-|C+|C|D>",
+  "summary": "<2-3 sentence assessment>",
+  "keywordMatches": ["<keyword found in both>"],
+  "missingKeywords": ["<important JD keyword missing from resume>"],
+  "strengths": ["<strength 1>","<strength 2>","<strength 3>"],
+  "improvements": ["<improvement 1>","<improvement 2>","<improvement 3>","<improvement 4>"],
+  "sectionFeedback": {"summary":"...","experience":"...","skills":"..."},
+  "inlineSuggestions": [
+    {"id":"s1","type":"<content|skills|format|sections|style>","original":"<exact short phrase from resume, max 80 chars>","improved":"<replacement>","reason":"<1 sentence why>"}
+  ],
+  "coverLetter": "<full tailored cover letter, 3-4 paragraphs, plain text>"
+}
+Rules for inlineSuggestions: provide 8-14 spread across all 5 types. "original" must be verbatim in the resume text.`;
+
+  try {
+    const raw = await geminiCall(prompt);
+    const d = JSON.parse(raw.replace(/\`\`\`json|\`\`\`/g,'').trim());
+    _analysisData = d;
+
+    populateReport(d);
+    renderResumeDoc(d);
+
+    const score = Math.min(100,Math.max(0,d.atsScore||0));
+    document.getElementById('ctb-score').textContent = score;
+    document.getElementById('ctb-sugs').textContent  = (d.inlineSuggestions||[]).length;
+    document.getElementById('ck-filename').textContent =
+      activeTab==='upload'?(document.querySelector('.fstatus-name')?.textContent||'Uploaded file'):'Pasted text';
+
+    document.getElementById('ck-step-results').style.display='block';
+    switchResultTab('report');
+  } catch(err) {
+    console.error(err);
+    toast('Analysis failed: '+(err.message||'Check your API key'));
+    if (ph) { ph.style.display='flex'; ph.innerHTML=`<div style="color:var(--danger);font-size:0.84rem">${escHtml(err.message||'Failed')}</div>`; }
+  }
+
+  btn.disabled=false;
+  btn.innerHTML='Analyze My Resume ◎';
+}
+
+// ── POPULATE REPORT ──
+function populateReport(d) {
+  const score = Math.min(100,Math.max(0,d.atsScore||0));
+  const col = score>=75?'#34D399':score>=50?'#FBBF24':'#FB7185';
+  const circ = 2*Math.PI*46;
+  const arc = document.getElementById('score-arc');
+  if (arc) {
+    arc.style.transition='none'; arc.style.stroke=col;
+    arc.setAttribute('stroke-dasharray',circ.toFixed(1));
+    arc.setAttribute('stroke-dashoffset',circ.toFixed(1));
+    requestAnimationFrame(()=>requestAnimationFrame(()=>{
+      arc.style.transition='stroke-dashoffset 1.2s cubic-bezier(0.25,1,0.5,1)';
+      arc.setAttribute('stroke-dashoffset',(circ-(score/100)*circ).toFixed(1));
+    }));
+  }
+  const sv = document.getElementById('score-val');
+  if (sv) { sv.textContent=score; sv.style.color=col; }
+  const gc = d.grade?.startsWith('A')?'#34D399':d.grade?.startsWith('B')?'#FBBF24':'#FB7185';
+  const gw = document.getElementById('grade-wrap');
+  if (gw) gw.innerHTML=`<span style="display:inline-flex;padding:3px 10px;border-radius:5px;font-size:0.8rem;font-weight:700;background:${gc}18;color:${gc};border:1px solid ${gc}30">${d.grade||'—'}</span>`;
+  const ss = document.getElementById('score-summary');
+  if (ss) ss.textContent = d.summary||'';
+
+  const km = document.getElementById('kw-matches');
+  if (km) km.innerHTML = (d.keywordMatches||[]).map(k=>`<span style="padding:3px 9px;border-radius:4px;font-size:0.73rem;font-weight:500;background:rgba(52,211,153,0.08);color:#34D399;border:1px solid rgba(52,211,153,0.18)">${escHtml(k)}</span>`).join('')||'<span style="font-size:0.78rem;color:var(--text3)">None found</span>';
+  const miss = document.getElementById('kw-missing');
+  if (miss) miss.innerHTML = (d.missingKeywords||[]).map(k=>`<span style="padding:3px 9px;border-radius:4px;font-size:0.73rem;font-weight:500;background:rgba(251,113,133,0.08);color:#FB7185;border:1px solid rgba(251,113,133,0.18)">${escHtml(k)}</span>`).join('')||'<span style="font-size:0.78rem;color:var(--text3)">None missing!</span>';
+
+  const rs = document.getElementById('rep-strengths');
+  if (rs) rs.innerHTML=(d.strengths||[]).map(s=>`<div style="display:flex;gap:9px;padding:9px 12px;background:var(--bg2);border-radius:7px;margin-bottom:7px;font-size:0.82rem;color:var(--text2);line-height:1.5;border-left:2px solid #34D399"><span style="color:#34D399;flex-shrink:0">✓</span>${escHtml(s)}</div>`).join('');
+  const ri = document.getElementById('rep-improvements');
+  if (ri) ri.innerHTML=(d.improvements||[]).map(i=>`<div style="display:flex;gap:9px;padding:9px 12px;background:var(--bg2);border-radius:7px;margin-bottom:7px;font-size:0.82rem;color:var(--text2);line-height:1.5;border-left:2px solid #FBBF24"><span style="color:#FBBF24;flex-shrink:0">→</span>${escHtml(i)}</div>`).join('');
+  const rsec = document.getElementById('rep-sections');
+  if (rsec) rsec.innerHTML=Object.entries(d.sectionFeedback||{}).map(([k,v])=>`<div style="margin-bottom:10px"><div style="font-size:0.68rem;font-weight:700;text-transform:uppercase;letter-spacing:0.07em;color:var(--text3);margin-bottom:4px">${escHtml(k)}</div><div style="font-size:0.82rem;color:var(--text2);line-height:1.55;padding:9px 12px;background:var(--bg2);border-radius:7px">${escHtml(v)}</div></div>`).join('');
+}
+
+// ── RENDER RESUME DOC WITH INLINE SUGGESTIONS ──
+const CAT_META = {
+  content: {color:'#60A5FA',label:'Content'},
+  skills:  {color:'#34D399',label:'Skills'},
+  format:  {color:'#FBBF24',label:'Format'},
+  sections:{color:'#A78BFA',label:'Sections'},
+  style:   {color:'#F472B6',label:'Style'},
+};
+
+function renderResumeDoc(d) {
+  const sugs = (d.inlineSuggestions||[]).filter(s=>s.original&&s.improved);
+  let html = escHtml(_resumeText_checker);
+  const sorted = [...sugs].sort((a,b)=>b.original.length-a.original.length);
+  sorted.forEach(s => {
+    try {
+      const re = new RegExp(s.original.replace(/[.*+?^${}()|[\]\\]/g,'\\$&').replace(/\s+/g,'\\s+'));
+      html = html.replace(re,`<span class="sug-mark" data-cat="${s.type}" data-id="${s.id}" onclick="openSugPopup('${s.id}',event)">${escHtml(s.original)}</span>`);
+    } catch(e) {}
+  });
+  const body = document.getElementById('resume-doc-body');
+  if (body) body.innerHTML = html;
+  buildSugAccordion(sugs);
+}
+
+function buildSugAccordion(sugs) {
+  const score = Math.min(100,Math.max(0,_analysisData?.atsScore||0));
+  const col   = score>=75?'#34D399':score>=50?'#FBBF24':'#FB7185';
+  const sc = document.getElementById('sug-score-circle');
+  if (sc) { sc.textContent=score; sc.style.borderColor=col; sc.style.color=col; }
+  const active = sugs.filter(s=>!_dismissedIds.has(s.id));
+  const ct = document.getElementById('sug-count-total');
+  if (ct) ct.textContent=`${active.length} suggestion${active.length!==1?'s':''}`;
+  const ctb = document.getElementById('ctb-sugs');
+  if (ctb) ctb.textContent=active.length;
+
+  const groups = {};
+  sugs.forEach(s=>{ if(!groups[s.type]) groups[s.type]=[]; groups[s.type].push(s); });
+
+  const acc = document.getElementById('sug-accordion');
+  if (!acc) return;
+  acc.innerHTML='';
+  let first=true;
+  Object.entries(groups).forEach(([cat,items]) => {
+    const meta = CAT_META[cat]||{color:'#888',label:cat};
+    const activeItems = items.filter(s=>!_dismissedIds.has(s.id));
+    if (!activeItems.length) return;
+    const pct = Math.min(100,Math.round((activeItems.length/sugs.length)*100*3));
+
+    const row = document.createElement('div');
+    row.className='sug-cat-row'+(first?'':' ');
+    row.id=`catrow-${cat}`;
+    row.innerHTML=`<div class="sug-cat-left"><div class="sug-cat-bar" style="background:${meta.color};width:${Math.max(20,pct)}px"></div><span class="sug-cat-name">${meta.label}</span></div><div style="display:flex;align-items:center;gap:8px"><span class="sug-cat-count">${activeItems.length} suggestion${activeItems.length!==1?'s':''}</span><span class="sug-cat-arrow">▾</span></div>`;
+    row.onclick=()=>toggleCatGroup(cat);
+    acc.appendChild(row);
+
+    const grp=document.createElement('div');
+    grp.className='sug-items-group'+(first?' open':'');
+    grp.id=`catgrp-${cat}`;
+    if(first){row.classList.add('open');}
+
+    activeItems.forEach(s=>{
+      const item=document.createElement('div');
+      item.className='sug-item'; item.id=`sugitem-${s.id}`;
+      item.innerHTML=`<div class="sug-item-type" style="color:${meta.color}">${meta.label}</div><div class="sug-item-reason">${escHtml(s.reason)}</div><div class="sug-item-orig">${escHtml(s.original)}</div><div class="sug-item-actions"><button class="sug-apply-btn" id="apply-${s.id}" onclick="applySuggestion('${s.id}',event)">Apply</button><button class="sug-dismiss-btn" onclick="dismissSuggestion('${s.id}',event)">Dismiss</button></div>`;
+      item.addEventListener('click',e=>{ if(e.target.tagName==='BUTTON') return; scrollToMark(s.id); });
+      grp.appendChild(item);
+    });
+    acc.appendChild(grp);
+    first=false;
+  });
+}
+
+function toggleCatGroup(cat) {
+  const row=document.getElementById(`catrow-${cat}`);
+  const grp=document.getElementById(`catgrp-${cat}`);
+  if(!grp) return;
+  const open=grp.classList.contains('open');
+  grp.classList.toggle('open',!open);
+  row?.classList.toggle('open',!open);
+}
+
+function scrollToMark(id) {
+  document.querySelectorAll('.sug-mark').forEach(e=>e.classList.remove('active'));
+  const mark=document.querySelector(`[data-id="${id}"]`);
+  if(mark){mark.classList.add('active');mark.scrollIntoView({block:'center',behavior:'smooth'});}
+  document.querySelectorAll('.sug-item').forEach(e=>e.classList.remove('active'));
+  document.getElementById(`sugitem-${id}`)?.classList.add('active');
+}
+
+function openSugPopup(id, event) {
+  const s=(_analysisData?.inlineSuggestions||[]).find(x=>x.id===id);
+  if(!s||_dismissedIds.has(id)) return;
+  _popupSugId=id; event.stopPropagation();
+  document.getElementById('sug-popup-text').textContent=s.improved;
+  document.getElementById('sug-popup-orig').textContent=s.original;
+  document.getElementById('popup-confirm-btn').onclick=()=>applySuggestion(id,null,true);
+  const popup=document.getElementById('sug-popup');
+  popup.classList.add('visible');
+  const x=Math.min(event.clientX+10,window.innerWidth-300);
+  const y=Math.min(event.clientY+10,window.innerHeight-200);
+  popup.style.left=x+'px'; popup.style.top=y+'px';
+  scrollToMark(id);
+}
+
+function closePopup() {
+  document.getElementById('sug-popup')?.classList.remove('visible');
+  _popupSugId=null;
+}
+document.addEventListener('click',e=>{
+  const popup=document.getElementById('sug-popup');
+  if(popup&&!popup.contains(e.target)) closePopup();
+});
+
+function applySuggestion(id, event, fromPopup) {
+  if(event) event.stopPropagation();
+  if(_appliedIds.has(id)) return;
+  _appliedIds.add(id);
+  const s=(_analysisData?.inlineSuggestions||[]).find(x=>x.id===id);
+  if(!s) return;
+  const mark=document.querySelector(`[data-id="${id}"]`);
+  if(mark){const span=document.createElement('span');span.className='sug-applied';span.textContent=s.improved;span.title='✓ '+s.reason;mark.replaceWith(span);}
+  const btn=document.getElementById(`apply-${id}`);
+  if(btn){btn.textContent='✓ Applied';btn.disabled=true;}
+  closePopup();
+  toast(`Applied suggestion ✓`);
+  rebuildCountBadge();
+}
+
+function dismissSuggestion(id, event) {
+  if(event) event.stopPropagation();
+  _dismissedIds.add(id);
+  document.querySelector(`[data-id="${id}"]`)?.classList.add('dismissed');
+  const item=document.getElementById(`sugitem-${id}`);
+  if(item) item.style.display='none';
+  closePopup(); rebuildCountBadge();
+}
+
+function rebuildCountBadge() {
+  const sugs=_analysisData?.inlineSuggestions||[];
+  const rem=sugs.filter(s=>!_dismissedIds.has(s.id)&&!_appliedIds.has(s.id)).length;
+  const ct=document.getElementById('sug-count-total');
+  if(ct) ct.textContent=`${rem} suggestion${rem!==1?'s':''}`;
+  const ctb=document.getElementById('ctb-sugs');
+  if(ctb) ctb.textContent=rem;
+}
+
+function toggleShowChanges() {
+  _showChanges=!_showChanges;
+  document.getElementById('changes-toggle')?.classList.toggle('on',_showChanges);
+  const sugs=_analysisData?.inlineSuggestions||[];
+  if(_showChanges){
+    document.querySelectorAll('.sug-mark').forEach(el=>{
+      if(_dismissedIds.has(el.dataset.id)) return;
+      const s=sugs.find(x=>x.id===el.dataset.id);
+      if(!s) return;
+      const span=document.createElement('span');
+      span.className='sug-applied'; span.textContent=s.improved; span.title=s.reason;
+      el.replaceWith(span);
+    });
+  } else { renderResumeDoc(_analysisData); }
+}
+
+function copyImprovedResume() {
+  const el=document.getElementById('resume-doc-body');
+  navigator.clipboard.writeText(el?.innerText||el?.textContent||'').then(()=>toast('Resume copied ✓'));
+}
+
+function regenSuggestion() { closePopup(); toast('Close and re-analyze for a fresh suggestion.'); }
+
+// ── COVER LETTER ──
+async function handleCoverLetterTab() {
+  if(_clGenerated||!_analysisData) return;
+  const cl=_analysisData.coverLetter;
+  if(cl&&cl.length>100){ renderCoverLetter(cl); return; }
+  document.getElementById('cl-placeholder').style.display='none';
+  document.getElementById('cl-loading').style.display='flex';
+  document.getElementById('cl-content').style.display='none';
+  try {
+    const text=await geminiCall(`Write a professional cover letter for this candidate applying to this job.
+RESUME: ${_resumeText_checker}
+JOB DESCRIPTION: ${_jdText}
+Rules: 3-4 paragraphs, professional tone, highlight 3 key matches, plain text only, no markdown, no placeholders.`);
+    renderCoverLetter(text);
+  } catch(e) {
+    document.getElementById('cl-loading').style.display='none';
+    document.getElementById('cl-placeholder').style.display='flex';
+    document.getElementById('cl-placeholder').innerHTML='<div class="rph-icon">⚠</div><div style="color:var(--danger)">Failed. Try again.</div>';
+  }
+}
+function renderCoverLetter(text) {
+  _clGenerated=true; _analysisData.coverLetter=text;
+  document.getElementById('cl-loading').style.display='none';
+  document.getElementById('cl-placeholder').style.display='none';
+  document.getElementById('cl-content').style.display='block';
+  document.getElementById('cl-doc-body').textContent=text;
+  document.getElementById('cl-length').textContent=`~${text.split(/\s+/).length} words`;
+}
+function copyCoverLetter() {
+  const t=document.getElementById('cl-doc-body')?.textContent;
+  if(t) navigator.clipboard.writeText(t).then(()=>toast('Cover letter copied ✓'));
+}
+async function regenCoverLetter() {
+  _clGenerated=false;
+  document.getElementById('cl-content').style.display='none';
+  document.getElementById('cl-placeholder').style.display='none';
+  document.getElementById('cl-loading').style.display='flex';
+  await handleCoverLetterTab();
+}
+
+// ── UTILS ──
+function escHtml(str) {
+  if (!str) return '';
+  return String(str).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+
+function toast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg; t.classList.add('show');
+  setTimeout(()=>t.classList.remove('show'), 3200);
+}
+
+// ── BOOT ──
+init();
+goCheckerStep(0);
+</script>
+</body>
+</html>

@@ -1,334 +1,127 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Customize Your UI Design</title>
-    <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js"></script>
-    <link rel="Stylesheet" href="style.css">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Order UI/UX design online | Busy Order</title>
+<meta name="description" content="Order UI/UX design online from Busy Order for ₹10,000. Share your details, pay securely and get a reply within 24 hours. No sign-up needed.">
+<meta name="robots" content="index, follow">
+<meta name="theme-color" content="#140b11">
+<link rel="canonical" href="https://www.busyorder.co.in/UI%20Design.html">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="Busy Order">
+<meta property="og:title" content="Order UI/UX design online | Busy Order">
+<meta property="og:description" content="Order UI/UX design online from Busy Order for ₹10,000. Share your details, pay securely and get a reply within 24 hours. No sign-up needed.">
+<meta property="og:url" content="https://www.busyorder.co.in/UI%20Design.html">
+<meta property="og:image" content="https://www.busyorder.co.in/img/og-image.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,700;12..96,800&family=Figtree:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/base.css">
+<link rel="stylesheet" href="css/inner.css">
+<link rel="icon" type="image/png" sizes="32x32" href="img/favicon-32.png">
+<link rel="apple-touch-icon" href="img/apple-touch-icon.png">
+<script type="application/ld+json">{"@context": "https://schema.org", "@type": "Service", "name": "UI/UX design", "provider": {"@type": "ProfessionalService", "name": "Busy Order", "url": "https://www.busyorder.co.in/"}, "areaServed": "IN", "offers": {"@type": "Offer", "price": "10000", "priceCurrency": "INR", "availability": "https://schema.org/InStock"}}</script>
+<script src="https://checkout.razorpay.com/v1/checkout.js" defer></script>
 </head>
 <body>
-    <script src="script.js"></script>
-<!--Nav Bar Start-->
-<nav class="navbar">
-    <a href="home.html">
-        <img id="Logo" class="logo" src="img/busy order.png" alt="logo" >
-    </a>
-    <div class="menu-toggle" onclick="toggleMenu()">☰</div>
-<ul>
-        <li><a href="index.html" id="homehome">Home</a></li>
-        <li><a href="home.html" id="sersec" >Services</a></li>
-        <li><a href="home.html"id="blogsec" >Blog</a></li>
-        <li><a href="home.html"id="contsec" >Contact Us</a></li>
-        <li><a href="home.html"id="aboutsec" >About</a></li>
-</ul>
-<div class="profile-section">
-    <div class="profile-display" id="profileDisplay">
-          <!-- <img id="profilePic" src="img/defaultpicture.png" alt="Profile Picture" class="profile-pic">-->
-          <span class="userdisplay" id="usernameDisplay">Username</span>
-    </div>
-</div>
-</nav> 
-<!--Nav Bar End-->
-<!--Custom page Start-->
-<section>
-    <div class="custom-page">
-        <h2 class="cu-h2">CUSTOMIZE YOUR UI DESIGN</h2>
-        <img src="img/ui_ux.png" class="cus-img">
-        <h3 class="cu-h3">Customizing your design is all about transforming your vision into a reality. 
-            Share every detail about your desired design—colors, style, layout, and special 
-            elements—so that it truly reflects your unique preferences and goals. 
-            Upload any sketches, inspirations, or references that capture the look and feel you're aiming for. 
-            Whether it’s a modern website layout, a mobile app interface, or a distinctive brand graphic,
-             I’ll bring your ideas to life. Together, we’ll create a personalized design that aligns perfectly 
-             with your expectations and stands out to your audience.</h3>
-    </div>
-</section>
-<!--Custom page End-->
- <!--Custom Order Start--> 
- <BR><BR><BR><BR><BR> 
- <div class="cuorderlogo">
-    <h1>UI Design Orders</h1>
-</div>
-<main>
-<section id="order-form">
-    <h2>Place Your Design Order</h2>
-    <p>Please fill out the form below to help us create your custom logo.</p>
-    
-    <form id="logoOrderForm" method="post" enctype="multipart/form-data">
-        <!-- Client Details -->
-        <fieldset>
-            <legend>Client Information</legend>
-            <label for="name">Name:</label>
-            <input type="text" id="name" name="name" placeholder="Your Name" required>
-
-            <label for="email">Email:</label>
-            <input type="email" id="email" name="email" placeholder="Your Email" required>
-
-            <label for="phone">Phone:</label>
-            <input type="tel" id="phone" name="phone" placeholder="Your Phone Number" required>
-        </fieldset>
-
-        <!-- Project Details -->
-        <fieldset>
-            <legend>UI Details</legend>
-            <label for="businessName">Business/Brand Name:</label>
-            <input type="text" id="businessName" name="businessName" placeholder="Your Brand Name" required>
-
-            <label for="style">Preferred Style:</label>
-            <select id="style" name="style" required>
-                <option value="">Select Style</option>
-                <option value="minimalist">Minimalist</option>
-                <option value="modern">Modern</option>
-                <option value="vintage">Vintage</option>
-                <option value="typography">Typography</option>
-            </select>
-
-            <label for="colors">Preferred Colors:</label>
-            <input type="text" id="colors" name="colors" placeholder="E.g., Blue, White, Black" required>
-
-            <label for="description">Additional Notes:</label>
-            <textarea id="description" name="description" rows="4" placeholder="Share any specific ideas or requirements..." required></textarea>
-        </fieldset>
-
-        <!-- File Upload -->
-        <!-- File Upload -->
-        <fieldset>
-            <legend>Upload Files</legend>
-            <label for="attachment">Attach File:</label>
-            <input type="file" id="file" name="image" required>
-        </fieldset>
-        <div id="orderNotification" style="display: none; color: green; font-weight: bold;"></div>
-
-        <!--Payment -->
-        <fieldset>
-            <legend>Payment Details</legend>
-            <p class="ppay">Pay Now & Place Your Designs</p>
-            <button id="payButton" type="button">Pay</button>
-            <div id="orderNotification" style="display: none; color: green; font-weight: bold;">Payment Successful. You can now submit your order.</div>
-        </fieldset>
-
-        <!-- Submit Button -->
-        <button class="cuorderbutton" type="submit">Submit Order</button>
-    </form>
-</section>
-</main>
-<!--Custom Order End-->   
-<!--Footer Page Start-->
-<section>
-<div class="footer">
-  <img src="img/busy order.png" class="foot-img" alt="Busy Order Logo">
-  <div class="footer-bottom">
-    <p class="foot-para">&copy; 2024 Busy Order. All rights reserved.</p>
-    <p class="fpp">Design & Developed By Krithiga R</p>
-    <div class="policy">
-        <a href="termcondition.html" target="_blank">Terms of Service</a> | 
-        <a href="privacy.html" target="_blank">Privacy Policy</a> | 
-        <a href="refund.html" target="_blank">Refund Policy</a>
-      </div>
+<a class="skip" href="#main">Skip to content</a>
+<svg width="0" height="0" style="position:absolute" aria-hidden="true" focusable="false">
+  <symbol id="i-wa" viewBox="0 0 24 24"><path fill="currentColor" d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413Z"/></symbol>
+  <symbol id="i-check" viewBox="0 0 24 24"><path fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" d="m5 12.5 4.5 4.5L19 7.5"/></symbol>
+</svg>
+<header class="nav" id="nav">
+  <div class="wrap nav-in">
+    <a class="brand" href="index.html" aria-label="Busy Order home"><img src="img/logo-mark.webp" alt="" width="38" height="38">Busy <span>Order</span></a>
+    <nav aria-label="Main">
+      <ul class="nav-links" id="navlinks">
+        <li><a href="index.html#services">Services</a></li>
+        <li><a href="index.html#designs">Designs</a></li>
+        <li><a href="portfolio.html">Portfolio</a></li>
+        <li><a href="index.html#about">About</a></li>
+        <li><a href="index.html#faq">FAQ</a></li>
+      </ul>
+    </nav>
+    <a class="btn btn-primary btn-sm nav-cta" href="index.html#contact">Get a free quote</a>
+    <button class="burger" id="burger" aria-label="Open menu" aria-expanded="false" aria-controls="navlinks"><i></i><i></i><i></i></button>
   </div>
+</header>
+<main id="main">
+<section class="page-hero"><div class="wrap">
+  <nav class="crumbs" aria-label="Breadcrumb"><a href="index.html">Home</a><span aria-hidden="true">/</span><a href="index.html#services">Services</a><span aria-hidden="true">/</span><span>UI/UX design</span></nav>
+  <h1>Order UI/UX design</h1>
+  <p class="lede">Wireframes and a clickable prototype for your website or app, so you can test the idea before building.</p>
+  <span class="pill">₹10,000 <span style="font-weight:500;opacity:.85">one-time price</span></span>
+</div></section>
+
+<div class="wrap order">
+  <form id="orderForm" data-title="UI/UX design order" data-amount="1000000" novalidate>
+    <fieldset class="card">
+      <legend>1. Your details</legend>
+      <div class="field"><label for="name">Name</label><input id="name" name="name" autocomplete="name" required placeholder="Your full name"></div>
+      <div class="two">
+        <div class="field"><label for="email">Email</label><input id="email" name="email" type="email" autocomplete="email" required placeholder="you@example.com"></div>
+        <div class="field"><label for="phone">Phone or WhatsApp</label><input id="phone" name="phone" type="tel" autocomplete="tel" inputmode="tel" required placeholder="+91 98765 43210"></div>
+      </div>
+    </fieldset>
+
+    <fieldset class="card">
+      <legend>2. About your project</legend>
+      <div class="field"><label for="businessName">Business or brand name <small>(optional)</small></label><input id="businessName" name="businessName" placeholder="Your brand name"></div>
+      <div class="two">
+        <div class="field"><label for="style">Preferred style <small>(optional)</small></label>
+          <select id="style" name="style"><option value="">No preference</option><option value="minimalist">Minimalist</option><option value="modern">Modern</option><option value="vintage">Vintage</option><option value="typography">Typography</option></select></div>
+        <div class="field"><label for="colors">Preferred colours <small>(optional)</small></label><input id="colors" name="colors" placeholder="e.g. Blue, white, black"></div>
+      </div>
+      <div class="field"><label for="description">What should I know?</label><textarea id="description" name="description" rows="5" required placeholder="Share your ideas, text to include, size, deadline and anything else that matters."></textarea></div>
+      <div class="field"><label for="file">Reference files <small>(optional: logos, photos, sketches)</small></label><input id="file" name="attachments" type="file" multiple></div>
+    </fieldset>
+
+    <fieldset class="card">
+      <legend>3. Pay and send</legend>
+      <p class="pay-note">Pay ₹10,000 to confirm your order, then send it to me. If your payment goes through but sending fails, you'll see my WhatsApp number to share your payment ID.</p>
+      <button class="btn btn-primary btn-block" id="payBtn" type="button">Pay ₹10,000</button>
+      <div class="status-line" id="payStatus" role="status" aria-live="polite"></div>
+      <button class="btn btn-wa btn-block" id="submitBtn" type="submit" style="margin-top:1rem" disabled>Send my order</button>
+    </fieldset>
+  </form>
+
+  <aside class="side" aria-label="Order summary">
+    <div class="box"><img src="img/ui-ux.webp" alt="UI/UX design design example" width="400" height="400">
+      <div class="big">₹10,000<small>One-time price. No sign-up needed.</small></div></div>
+    <div class="box"><h2>What you get</h2><ul><li><svg aria-hidden="true"><use href="#i-check"/></svg>Pay securely online with Razorpay</li><li><svg aria-hidden="true"><use href="#i-check"/></svg>Upload logos, photos or sketches as references</li><li><svg aria-hidden="true"><use href="#i-check"/></svg>No account or login needed</li><li><svg aria-hidden="true"><use href="#i-check"/></svg>I reply within 24 hours to confirm the details</li></ul></div>
+    <div class="box"><h2>Not sure yet?</h2><p style="color:var(--muted);margin-bottom:1rem">Get a free quote first and pay only when you're happy with the plan.</p>
+        <a class="btn btn-primary btn-block" href="index.html#contact">Get a free quote</a></div>
+    <a class="btn btn-ghost btn-block" href="https://wa.me/919042039110?text=Hi%20Krithiga%2C%20I%20have%20a%20question%20about%20the%20UI/UX%20design." target="_blank" rel="noopener"><svg aria-hidden="true"><use href="#i-wa"/></svg>Ask a question on WhatsApp</a>
+  </aside>
 </div>
-</section>
-<!--Footer Page End-->
-<script type="module">
-// Import the functions you need from the SDKs
-import { initializeApp } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-app.js";
-import { getDatabase, ref, get, child } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-database.js";
-import { getAuth, signInWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-auth.js";
-
-// Your web app's Firebase configuration
-const firebaseConfig = {
-apiKey: "AIzaSyDVIaFaHV5e4fxL6HQeO22_TtaGEtK60CE",
-authDomain: "busy-order-111094.firebaseapp.com",
-databaseURL: "https://busy-order-111094-default-rtdb.firebaseio.com",
-projectId: "busy-order-111094",
-storageBucket: "busy-order-111094.firebasestorage.app",
-messagingSenderId: "402345046681",
-appId: "1:402345046681:web:4def93c2d5c4742b3c7e08",
-measurementId: "G-3R9FT0HKNM"
-};
-
-// Initialize Firebase
-const app = initializeApp(firebaseConfig);
-const db = getDatabase(app);
-const auth = getAuth(app);
-
-
-//username display
-document.addEventListener('DOMContentLoaded', () => {
-    const username = sessionStorage.getItem("username");
-    if (username) {
-        document.getElementById('usernameDisplay').textContent = username;
-    } else {
-        document.getElementById('usernameDisplay').textContent = "";
-    }
-});
-
-// Load user profile data
-function loadUserProfile() {
-const userId = ""; // Replace with logic to get the logged-in user ID
-
-db.ref('users/' + userId).once('value').then((snapshot) => {
-if (snapshot.exists()) {
-    const userData = snapshot.val();
-    usernameDisplayElement.textContent = userData.username || 'User';
-}
-}).catch((error) => {
-console.error("Error fetching user data:", error);
-});
-}
-// Call the function when the page loads
-window.addEventListener('load', loadUserProfile);
-/* Profile Picture 
-window.addEventListener('DOMContentLoaded', () => {
-    const userCreds = JSON.parse(sessionStorage.getItem('user-creds'));
-    const profilePic = document.getElementById('profilePic');
-
-    if (userCreds && userCreds.profilePic) {
-        profilePic.src = userCreds.profilePic;
-    } else {
-        console.log("No profile picture found in sessionStorage, showing default image.");
-    }
-});
-*/
-</script>
+</main>
+<footer class="footer">
+  <div class="wrap">
+    <div class="foot-grid">
+      <div class="foot-about">
+        <a class="brand" href="index.html"><img src="img/logo-mark.webp" alt="" width="38" height="38" loading="lazy">Busy <span>Order</span></a>
+        <p>Websites, Android apps, UI/UX and custom designs from Trichy, Tamil Nadu.</p>
+      </div>
+      <div><h3>Explore</h3><ul>
+        <li><a href="index.html#services">Services</a></li><li><a href="index.html#designs">Designs</a></li>
+        <li><a href="portfolio.html">Portfolio</a></li><li><a href="https://journeyearning.blogspot.com" target="_blank" rel="noopener">Blog</a></li></ul></div>
+      <div><h3>Contact</h3><ul>
+        <li><a href="https://wa.me/919042039110" target="_blank" rel="noopener">WhatsApp</a></li><li><a href="mailto:onlyrithi@gmail.com">Email</a></li>
+        <li><a href="https://www.linkedin.com/in/onlykrithiga" target="_blank" rel="noopener">LinkedIn</a></li><li><a href="https://github.com/busyorder" target="_blank" rel="noopener">GitHub</a></li></ul></div>
+      <div><h3>Legal</h3><ul>
+        <li><a href="termcondition.html">Terms of Service</a></li><li><a href="privacy.html">Privacy Policy</a></li>
+        <li><a href="refund.html">Refund Policy</a></li><li><a href="privacy policy apps.html">App Privacy Policy</a></li>
+        <li><a href="delete-account.html">Delete Account</a></li></ul></div>
+    </div>
+    <div class="foot-bottom"><span>&copy; 2026 Busy Order. All rights reserved.</span><span>Designed and developed by Krithiga R</span></div>
+  </div>
+</footer>
+<a class="wa-float" href="https://wa.me/919042039110?text=Hi%20Krithiga%2C%20I%20need%20help%20with%20a%20project." target="_blank" rel="noopener" aria-label="Chat on WhatsApp"><svg aria-hidden="true"><use href="#i-wa"/></svg></a>
+<div class="dock">
+  <a class="btn btn-wa" href="https://wa.me/919042039110?text=Hi%20Krithiga%2C%20I%20need%20help%20with%20a%20project." target="_blank" rel="noopener"><svg aria-hidden="true"><use href="#i-wa"/></svg>WhatsApp</a>
+  <a class="btn btn-primary" href="index.html#contact">Get a quote</a>
+</div>
+<script src="js/order.js" defer></script>
 </body>
-<script>
-let paymentSuccessful = false; // Flag to track payment status
-// Razorpay Payment Gateway Integration
-document.getElementById('payButton').addEventListener('click', function() {
-// Validate form fields
-const name = document.getElementById('name').value.trim();
-const email = document.getElementById('email').value.trim();
-const phone = document.getElementById('phone').value.trim();
-const businessName = document.getElementById('businessName').value.trim();
-const style = document.getElementById('style').value;
-const colors = document.getElementById('colors').value.trim();
-const description = document.getElementById('description').value.trim();
-const fileInput = document.getElementById('file');
-
-
-if (!name || !email || !phone || !businessName || !style || !colors || !description) {
-alert('Please fill out all fields before proceeding with the payment.');
-return; // Stop execution if any field is empty
-}
-
-if (!fileInput.files || fileInput.files.length === 0) {
-alert('Please upload a file.');
-return;
-}
-
-var options = {
-"key": "rzp_live_N81a7zaGEG0EZn", // Replace with your Razorpay Test Key
-"amount": "1000000", // Amount in paise (10000 INR = 1000000 paise)
-"currency": "INR",
-"name": "Busy Order",
-"description": "Logo Design Payment",
-"image": "https://busy-order.com/img/busy%20order.png", // Optional company logo
-"handler": function(response) {
-    console.log("Payment Response:", response); // Debug the payment response
-
-    // Display success message
-    alert("Payment successful! Payment ID: " + response.razorpay_payment_id);
-
-    // Update payment status
-    paymentSuccessful = true;
-    // Set up a notification
-    document.getElementById('orderNotification').style.display = 'block';
-    document.getElementById('orderNotification').textContent = 'Payment Successful. You can now submit your order.';
-
-    
-},
-"prefill": {
-    "name": name, // Prefill user details
-    "email": email,
-    "contact": phone
-},
-"theme": {
-    "color": "#3399cc" // Customize the checkout theme
-}
-};
-
-// Create Razorpay instance
-var rzp1 = new Razorpay(options);
-
-// Handle payment failure
-rzp1.on('payment.failed', function(response) {
-console.log("Payment Failed:", response);
-alert("Payment failed. Error: " + response.error.description);
-});
-
-// Open Razorpay checkout
-rzp1.open();
-});
-
-// Form submission with payment check
-document.getElementById('logoOrderForm').addEventListener('submit', function(e) {
-e.preventDefault();
-
-if (!paymentSuccessful) {
-alert('Please complete the payment before submitting your order.');
-return;
-}
-
-const email = document.getElementById('email').value.trim();
-const name = document.getElementById('name').value.trim();
-const phone = document.getElementById('phone').value.trim();
-const businessName = document.getElementById('businessName').value.trim();
-const style = document.getElementById('style').value.trim();
-const colors = document.getElementById('colors').value.trim();
-const message = document.getElementById('description').value.trim();
-const fileInput = document.getElementById('file');
-const files = fileInput.files;
-
-const formData = new FormData();
-formData.append('email', email);
-formData.append('name', name);
-formData.append('phone', phone);
-formData.append('businessName', businessName);
-formData.append('style', style);
-formData.append('colors', colors);
-formData.append('message', message);
-
-for (let i = 0; i < files.length; i++) {
-formData.append('attachments', files[i]);
-}
-
-fetch('https://www.busy-order.com/api/sendMail', {
-method: 'POST',
-body: formData,
-})
-.then(response => response.json())
-.then(data => {
-if (data.error) {
-    alert(`Failed: ${data.error}`);
-} else {
-    alert(data.message || 'Email sent successfully!');
-    window.location.href = "placedesignsuccess.html";
-}
-})
-.catch(error => {
-console.error('Error sending email:', error);
-alert('Failed to send email. Please try again.');
-});
-
-const requiredFields = document.querySelectorAll('input[required], textarea[required], select[required]');
-let allValid = true;
-
-requiredFields.forEach(field => {
-if (!field.value.trim()) {
-    field.style.border = '1px solid red';
-    allValid = false;
-} else {
-    field.style.border = '1px solid #ddd';
-}
-});
-
-if (!allValid) {
-event.preventDefault();
-alert('Please complete all required fields.');
-}
-});
-</script>
 </html>
