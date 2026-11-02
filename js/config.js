@@ -10,13 +10,11 @@
     // (for example GitHub Pages). Example: 'https://busyorder.vercel.app/api/sendMail'. Leave '' if the site runs on Vercel.
     apiUrl: '',
 
-    // Free backup that works from any host (recommended if your site is not on Vercel):
-    // get a key at https://web3forms.com (enter your email, they send the key), then paste it between the quotes.
+    // Optional second backup (not needed): a key from https://web3forms.com. Leave '' to use FormSubmit only.
     web3formsKey: '',
 
-    // Optional extra backup: FormSubmit (no key). It needs an "Activate Form" email that did not arrive in tests, so it is off.
-    // To try it, set to 'busyorderofficial@gmail.com'.
-    formsubmitEmail: ''
+    // FormSubmit (no key needed). Your address is already activated. Messages are emailed to this address.
+    formsubmitEmail: 'busyorderofficial@gmail.com'
   };
 
   // fetch() with a time limit, so a service that is down cannot leave the form spinning.
@@ -82,7 +80,7 @@
       method: 'POST',
       headers: { 'Accept': 'application/json' },
       body: out
-    }).then(function (r) {
+    }, 8000).then(function (r) {
       return r.json().catch(function () { return {}; }).then(function (j) {
         if (!r.ok || String(j.success) === 'false') throw new Error((j && j.message) || ('HTTP ' + r.status));
         return j;
@@ -103,8 +101,8 @@
     }
     function runBackups(fd2, n) {
       var list = [];
-      if (cfg.web3formsKey) list.push(['web3forms', viaWeb3Forms]);
       if (cfg.formsubmitEmail) list.push(['formsubmit', viaFormSubmit]);
+      if (cfg.web3formsKey) list.push(['web3forms', viaWeb3Forms]);
       if (n >= list.length) fail();
       return list[n][1](fd2).catch(function (e) {
         console.error('[Busy Order] ' + list[n][0] + ' failed:', e.message);
