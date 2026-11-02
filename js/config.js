@@ -12,7 +12,7 @@
 
     // Free backup that works from any host (recommended if your site is not on Vercel):
     // get a key at https://web3forms.com (enter your email, they send the key), then paste it between the quotes.
-    web3formsKey: 'a1b22495-92a9-4821-850e-025ca2c85619',
+    web3formsKey: '',
 
     // Optional extra backup: FormSubmit (no key). It needs an "Activate Form" email that did not arrive in tests, so it is off.
     // To try it, set to 'busyorderofficial@gmail.com'.
