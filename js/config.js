@@ -14,9 +14,10 @@
     // get a key at https://web3forms.com (enter your email, they send the key), then paste it between the quotes.
     web3formsKey: 'a1b22495-92a9-4821-850e-025ca2c85619',
 
-    // Second backup (no key, but formsubmit.co was not responding when tested, so it is off).
-    // To try it: set to 'busyorderofficial@gmail.com' and click the "Activate Form" link they email you.
-    formsubmitEmail: ''
+    // Second backup (no key): FormSubmit emails each message to this address.
+    // For a new address, the first message triggers an "Activate Form" email from FormSubmit. Click that link once.
+    // Set to '' to turn it off.
+    formsubmitEmail: 'busyorderofficial@gmail.com'
   };
 
   // fetch() with a time limit, so a service that is down cannot leave the form spinning.
