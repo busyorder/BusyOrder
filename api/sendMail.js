@@ -1,5 +1,6 @@
 // Busy Order: emails every enquiry and paid order to you.
 // Needs two environment variables in Vercel: GMAIL_USER and GMAIL_PASS (a Gmail App Password).
+// Optional: NOTIFY_EMAIL = the inbox that should receive the messages (defaults to GMAIL_USER).
 const nodemailer = require('nodemailer');
 const multer = require('multer');
 
@@ -91,7 +92,7 @@ module.exports = (req, res) => {
 
         const mail = {
             from: process.env.GMAIL_USER,
-            to: process.env.GMAIL_USER,
+            to: process.env.NOTIFY_EMAIL || process.env.GMAIL_USER,
             subject,
             text: lines.join('\n'),
             attachments: (req.files || []).map((f) => ({ filename: f.originalname, content: f.buffer })),

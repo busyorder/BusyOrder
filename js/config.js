@@ -14,8 +14,9 @@
     // get a key at https://web3forms.com (enter your email, they send the key), then paste it between the quotes.
     web3formsKey: '',
 
-    // Second free backup (no key, but its server was down when tested). Leave '' unless you want to try it.
-    formsubmitEmail: ''
+    // Second free backup (no key): FormSubmit emails each message to this address.
+    // The first message triggers an "Activate Form" email from FormSubmit. Click that link once. Set to '' to turn it off.
+    formsubmitEmail: 'busyorderofficial@gmail.com'
   };
 
   function entries(fd) {
