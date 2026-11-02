@@ -14,10 +14,22 @@
     // get a key at https://web3forms.com (enter your email, they send the key), then paste it between the quotes.
     web3formsKey: '',
 
-    // Second free backup (no key): FormSubmit emails each message to this address.
-    // The first message triggers an "Activate Form" email from FormSubmit. Click that link once. Set to '' to turn it off.
-    formsubmitEmail: 'busyorderofficial@gmail.com'
+    // Second backup (no key, but formsubmit.co was not responding when tested, so it is off).
+    // To try it: set to 'busyorderofficial@gmail.com' and click the "Activate Form" link they email you.
+    formsubmitEmail: ''
   };
+
+  // fetch() with a time limit, so a service that is down cannot leave the form spinning.
+  function timedFetch(url, opts, ms) {
+    if (!window.AbortController) return fetch(url, opts);
+    var ctl = new AbortController();
+    var t = setTimeout(function () { ctl.abort(); }, ms || 10000);
+    opts = opts || {}; opts.signal = ctl.signal;
+    return fetch(url, opts).then(function (r) { clearTimeout(t); return r; }, function (e) {
+      clearTimeout(t);
+      throw (e && e.name === 'AbortError') ? new Error('timed out (service not responding)') : e;
+    });
+  }
 
   function entries(fd) {
     var out = {}, files = 0;
@@ -42,7 +54,7 @@
       message: lines.join('\n')
     };
     if (f.email) body.email = f.email;
-    return fetch('https://api.web3forms.com/submit', {
+    return timedFetch('https://api.web3forms.com/submit', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
       body: JSON.stringify(body)
@@ -66,7 +78,7 @@
     out.append('_captcha', 'false');
     if (f.email) out.append('_replyto', f.email);
     fd.forEach(function (v, k) { if (v instanceof File) out.append('attachment', v, v.name); });
-    return fetch('https://formsubmit.co/ajax/' + encodeURIComponent(cfg.formsubmitEmail), {
+    return timedFetch('https://formsubmit.co/ajax/' + encodeURIComponent(cfg.formsubmitEmail), {
       method: 'POST',
       headers: { 'Accept': 'application/json' },
       body: out
@@ -102,7 +114,7 @@
     }
     function attempt(i) {
       if (i >= urls.length) return runBackups(fd, 0);
-      return fetch(urls[i].url, { method: 'POST', body: fd })
+      return timedFetch(urls[i].url, { method: 'POST', body: fd }, 15000)
         .then(function (r) {
           return r.json().catch(function () { return {}; }).then(function (j) {
             if (r.ok) return j;
