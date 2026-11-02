@@ -128,7 +128,7 @@
           })
           .catch(function (err) {
             var why = err ? esc(err.message || err.code || 'unknown') : 'unknown';
-            show('err', 'Sorry, that did not go through. <a href="' + waLink(d) + '" target="_blank" rel="noopener">Send the same message on WhatsApp</a> or email busyorderofficial@gmail.com.<br><small style="font-weight:500;opacity:.85">Technical reason: ' + why + '</small>');
+            show('err', 'Sorry, the form could not send your message. Please tap the button to send it on WhatsApp instead, so it is not lost.<br><a class="btn btn-wa" style="margin-top:.9rem;text-decoration:none" href="' + waLink(d) + '" target="_blank" rel="noopener">Send on WhatsApp</a><br><small style="font-weight:500;opacity:.85">Or email busyorderofficial@gmail.com. Technical reason: ' + why + '</small>');
           })
           .then(function () {
             btn.disabled = false;
