@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Activate form | Busy Order</title>
+<meta name="robots" content="noindex, nofollow">
+<link rel="stylesheet" href="css/base.css">
+<style>
+  .box{max-width:34rem;margin:0 auto;padding:7rem 1.25rem 4rem}
+  .box h1{font-size:2rem;margin-bottom:1rem}
+  .box p{color:var(--muted);margin-bottom:1.2rem}
+  .box ol{color:var(--muted);margin:0 0 1.6rem 1.2rem;list-style:decimal}
+  .box li{margin-bottom:.5rem}
+</style>
+</head>
+<body>
+<main class="box">
+  <h1>Activate your contact form</h1>
+  <p>This page is for you, the site owner. You only need to do this once for <strong>busyorderofficial@gmail.com</strong>.</p>
+  <ol>
+    <li>Click the button below.</li>
+    <li>On the FormSubmit page that opens, confirm if it asks.</li>
+    <li>Open Gmail for busyorderofficial@gmail.com (check Spam too) and click <strong>Activate Form</strong> in the email from FormSubmit.</li>
+  </ol>
+  <form action="https://formsubmit.co/busyorderofficial@gmail.com" method="POST">
+    <input type="hidden" name="_subject" value="Busy Order: activate form">
+    <input type="hidden" name="_captcha" value="false">
+    <input type="hidden" name="_next" value="https://www.busyorder.co.in/">
+    <input type="hidden" name="name" value="Activation test">
+    <input type="hidden" name="message" value="Activation test from the Busy Order website.">
+    <button class="btn btn-primary" type="submit">Send activation email</button>
+  </form>
+  <p style="margin-top:1.6rem"><a href="index.html" style="color:var(--gold);text-decoration:underline">Back to the website</a></p>
+</main>
+</body>
+</html>
