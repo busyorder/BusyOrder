@@ -10,13 +10,12 @@
     // (for example GitHub Pages). Example: 'https://busyorder.vercel.app/api/sendMail'. Leave '' if the site runs on Vercel.
     apiUrl: '',
 
-    // Free backup #1 (needs no key): FormSubmit emails each message to this address, from any host.
-    // The FIRST message sent triggers an email from FormSubmit to this inbox. Open it and click "Activate Form" once.
-    // Set to '' to turn it off.
-    formsubmitEmail: 'onlyrithi@gmail.com',
+    // Free backup that works from any host (recommended if your site is not on Vercel):
+    // get a key at https://web3forms.com (enter your email, they send the key), then paste it between the quotes.
+    web3formsKey: '',
 
-    // Free backup #2 (optional): get a key at https://web3forms.com (enter your email, they send the key).
-    web3formsKey: ''
+    // Second free backup (no key, but its server was down when tested). Leave '' unless you want to try it.
+    formsubmitEmail: ''
   };
 
   function entries(fd) {
@@ -91,8 +90,8 @@
     }
     function runBackups(fd2, n) {
       var list = [];
-      if (cfg.formsubmitEmail) list.push(['formsubmit', viaFormSubmit]);
       if (cfg.web3formsKey) list.push(['web3forms', viaWeb3Forms]);
+      if (cfg.formsubmitEmail) list.push(['formsubmit', viaFormSubmit]);
       if (n >= list.length) fail();
       return list[n][1](fd2).catch(function (e) {
         console.error('[Busy Order] ' + list[n][0] + ' failed:', e.message);
